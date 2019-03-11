@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,user-scalable=no,initial-scale=1" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="./css/util.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="indexPage">
+        <div class="bodyBox">
+            <div class="imgBox"></div>
+            <div class="inputBox">
+                <div class="inputGroup">
+                    <input id="txtAccount" type="tel" maxlength="9" placeholder="请输入帐号">
+                    <span class="clear hide txtAccountClear">×</span>
+                </div>
+                <div class="inputGroup psd">
+                    <input id="txtPassword" type="password" placeholder="请输入密码">
+                    <span class="clear hide txtPasswordClear">×</span>
+                </div>
+                <button id="sub-btn" class="submit">绑 定</button>
+            </div>
+            <div class="prompt" style="display: block;">亲，您尚未绑定，无法提供相关服务，请按提示输入账号、密码进行绑定，方可尊享专属服务</div>
+        </div>
+    </div>
+    <div id="van-dialog" class="van-dialog">
+        <div class="van-dialog__header">提示</div>
+        <div class="van-dialog__content van-hairline">
+            <div class="van-dialog__message van-dialog__message--withtitle" id="err-text"></div>
+        </div>
+        <div class="van-dialog__footer">
+            <button class="van-button van-dialog__confirm van-button--default van-button--large" id="certain-btn">
+                <!---->
+                <span class="van-button__text" >
+                    确定
+                </span>
+            </button>
+        </div>
+    </div>
+    <div id="van-modal" class="van-modal"></div>
+    <script src="./js/login.js"></script>
+</body>
+
+</html>

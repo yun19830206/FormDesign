@@ -18,7 +18,7 @@ export default {
    */
   baseUrl: {
     dev: 'http://www.tasktrack.com.cn/',
-    pro: 'https://produce.com'
+    pro: 'http://www.tasktrack.com.cn/'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

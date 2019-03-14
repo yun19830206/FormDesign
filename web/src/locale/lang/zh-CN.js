@@ -48,5 +48,7 @@ export default {
   new_define_form:'新定义表单',
   business_customization:'业务定制功能',
   customization1:'定制功能1',
-  customization2:'定制功能2'
+  customization2:'定制功能2',
+  form_data:'表单数据',
+  crm_project_user:'12213'
 }

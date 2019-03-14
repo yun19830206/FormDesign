@@ -1,9 +1,9 @@
 .DS_Store
-/web/node_modules
-/web/dist
+node_modules
+/dist
 
-/web/tests/e2e/videos/
-/web/tests/e2e/screenshots/
+/tests/e2e/videos/
+/tests/e2e/screenshots/
 
 # local env files
 .env.local
@@ -23,4 +23,4 @@ yarn-error.log*
 *.sln
 *.sw*
 
-/webbuild/env.js
+build/env.js

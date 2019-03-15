@@ -30,6 +30,7 @@ export default {
       this.handleLogin({ userName, password }).then(res => {
         this.$store.commit('getUserInfo', res)
         // this.getUserInfo().then(res => {
+          localStorage.setItem('login', 'login')
           this.$router.push({
             name: this.$config.homeName
           })

@@ -1,21 +1,6 @@
 <template>
   <Row :gutter="10">
-    <i-col span="12">
-      <Card>
-        <div class="update-paste-con">
-          <paste-editor v-model="pasteDataArr" @on-success="handleSuccess" @on-error="handleError"/>
-        </div>
-        <div class="update-paste-btn-con">
-          <span class="paste-tip">使用Tab键换列，使用回车键换行</span>
-          <Button type="primary" style="float: right;" @click="handleShow">显示表格数据</Button>
-        </div>
-      </Card>
-    </i-col>
-    <i-col span="12">
-      <Card>
-        <Table :height="400" :columns="columns" :data="tableData"/>
-      </Card>
-    </i-col>
+    
   </Row>
 </template>
 

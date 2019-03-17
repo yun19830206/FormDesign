@@ -1,7 +1,7 @@
 import Main from '@/components/main'
 // import parentView from '@/components/parent-view'
 // import axios from 'axios'
-import { getListData } from '../api/data'
+// import { getListData } from '../api/data'
 import dada from '@/view/update/update-table.vue'
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -89,7 +89,17 @@ let routerArr = [
       title: '表单数据'
     },
     component: Main,
-    
+    children: [
+      {
+        path: 'form_data_child',
+        name: 'form_data_child',
+        meta: {
+          title: '表单页面',
+          icon: 'md-cloud-upload'
+        },
+        component: () => import('@/view/formData/data_form_child.vue')
+      }
+    ]
   },
   {
     path: '/business_customization',
@@ -146,40 +156,40 @@ let routerArr = [
   }
 ]
 
-getListData().then((res) => {
-  console.log(res.data, '-----------')
-  let childArr = [];
-  //{
-  //         path: 'my_define_form',
-  //         name: 'my_define_form',
-  //         meta: {
-  //           icon: 'ios-document',
-  //           title: '我定义表单'
-  //         },
-  //         component: () => import('@/view/defineForm/my_define_form.vue')
-  //       },
-  //       {
-  //         path: 'new_define_form',
-  //         name: 'new_define_form',
-  //         meta: {
-  //           icon: 'md-clipboard',
-  //           title: '新定义表单'
-  //         },
-  //         component: () => import('@//view/defineForm/new_define_form.vue')
-  //       }
-  res.data.data.forEach((val) => {
-    let childObj = {}
-    childObj.path = val.englishName;
-    childObj.name = routerArr[3].children[0].name;
-    childObj.meta = {
-      icon: 'iii',
-      title: val.chineseName
-    }
-    childObj.component = () => import('@/view/defineForm/my_define_form.vue')
-    childArr.push(childObj)
-  })
-  // routerArr[3].children = childArr
-  // routerArr[4].children.splice(0,1)
-})
+// getListData().then((res) => {
+//   console.log(res.data, '-----------')
+//   let childArr = [];
+//   //{
+//   //         path: 'my_define_form',
+//   //         name: 'my_define_form',
+//   //         meta: {
+//   //           icon: 'ios-document',
+//   //           title: '我定义表单'
+//   //         },
+//   //         component: () => import('@/view/defineForm/my_define_form.vue')
+//   //       },
+//   //       {
+//   //         path: 'new_define_form',
+//   //         name: 'new_define_form',
+//   //         meta: {
+//   //           icon: 'md-clipboard',
+//   //           title: '新定义表单'
+//   //         },
+//   //         component: () => import('@//view/defineForm/new_define_form.vue')
+//   //       }
+//   res.data.data.forEach((val) => {
+//     let childObj = {}
+//     childObj.path = val.englishName;
+//     childObj.name = routerArr[3].children[0].name;
+//     childObj.meta = {
+//       icon: 'iii',
+//       title: val.chineseName
+//     }
+//     childObj.component = () => import('@/view/defineForm/my_define_form.vue')
+//     childArr.push(childObj)
+//   })
+//   // routerArr[3].children = childArr
+//   // routerArr[4].children.splice(0,1)
+// })
 console.log(routerArr)
 export default routerArr

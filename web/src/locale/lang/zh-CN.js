@@ -50,5 +50,6 @@ export default {
   customization1:'定制功能1',
   customization2:'定制功能2',
   form_data:'表单数据',
-  crm_project_user:'12213'
+  crm_project_user:'12213',
+  form_data_child: '表单数据'
 }

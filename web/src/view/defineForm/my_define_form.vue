@@ -31,6 +31,26 @@ export default {
   data() {
     return {
       modelShow: false,
+      typesObject: {
+        'COLUMN_SIGN_LINE_TEXT':'单行文本框',
+        'COLUMN_DROP_BOX':'下拉框',
+        'COLUMN_RICH_TEXT':'富文本',
+        'COLUMN_MANY_LINE_TEXT':'多行文本框',
+        'COLUMN_DATE_TIME':'日期',
+        'COLUMN_NUMBER':'数字',
+        'COLUMN_PHONE_NUMBER':'手机号',
+        'COLUMN_EMAIL':'邮箱号',
+        'COLUMN_FILE':'附件',
+        'COLUMN_FOREIGN_KEY':'外键引用框'
+      },
+      conditionsObject: {
+        'CONDITION_ENUM_LIKE':'包含关系',
+        'CONDITION_ENUM_EQUAL':'等于',
+        'CONDITION_ENUM_MORE':'大于',
+        'CONDITION_ENUM_LESS':'小于',
+        'CONDITION_ENUM_BETWEEN':'介于之间'
+      },
+      
       tableData: [],
       columns: [
         {
@@ -43,10 +63,13 @@ export default {
         },
         {
           title: "创建时间",
-          key: "createTime"
+          key: "createTime",
+          render: (h, params) => {
+            return h('span', new Date(params.row.createTime).format('yyyy-MM-dd hh:mm:ss'))
+          }
         },
         {
-          title: "Action",
+          title: "操作",
           key: "action",
           render: (h, params) => {
             return h("div", [
@@ -87,7 +110,10 @@ export default {
         },
         {
           title: "创建时间",
-          key: "createTime"
+          key: "createTime",
+          render: (h, params) => {
+            return h('span', new Date(params.row.createTime).format('yyyy-MM-dd hh:mm:ss'))
+          }
         }
       ],
       tableColumnConfigListColumns: [
@@ -101,7 +127,10 @@ export default {
         },
         {
           title: "字段类型下拉框枚举",
-          key: "colType"
+          key: "colType",
+          render: (h, params) => {
+            return h('span', this.typesObject[params.row.colType])
+          }
         },
         {
           title: "字段长度",
@@ -121,11 +150,13 @@ export default {
         },
         {
           title: "是否引用展示字段",
-          key: "displayColumn"
+          key: "displayColumn",
+          render: this.renderTF('displayColumn')
         },
         {
           title: "是否唯一",
-          key: "uniqued"
+          key: "uniqued",
+          render: this.renderTF('uniqued')
         },
         {
           title: "能否为空",
@@ -136,27 +167,25 @@ export default {
         {
           title: "引用表单表字段ID",
           key: "tableColumn",
-          width: 100
-        },
-        {
-          title: "引用表单表字段ID详细内容",
-          key: "tableColumnConfig"
+          render: (h, params) => {
+            return h('span', params.row.tableColumnConfig.chineseName)
+          }
         },
         {
           title: "查询条件枚举",
           key: "queryType",
-          width: 200
+          render: (h, params) => {
+            return h('span', this.conditionsObject[params.row.queryType])
+          }
         }
       ],
       tableDisplayConfigListColumns: [
         {
           title: "引用表单表字段ID",
           key: "tableColumn",
-          width: 100
-        },
-        {
-          title: "引用表单表字段ID详细内容",
-          key: "tableColumnConfig"
+          render: (h, params) => {
+            return h('span', params.row.tableColumnConfig.chineseName)
+          }
         }
       ]
     };
@@ -170,6 +199,14 @@ export default {
     });
   },
   methods: {
+    /**
+     * 渲染表格是否项
+     */
+    renderTF (param) {
+      return (h, params) => {
+        return h('span', params.row[param] ? '是' : '否')
+      }
+    },
     showModal() {
       this.modalVisible = true;
     },

@@ -40,3 +40,12 @@ export const getFormData = (pageObj) => {
     method: 'post'
   })
 }
+// 查看当前条详情
+export const showDetail = (obj) => {
+  return axios.request({
+    headers: {"Content-Type": "application/json"},
+    url: 'aiassistant/formdata/get/formdatabyid',
+    data: obj,
+    method: 'post'
+  })
+}

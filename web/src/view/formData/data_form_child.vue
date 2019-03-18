@@ -24,11 +24,21 @@
     <!--查看-->
     <Modal
       v-model="modal1"
-      title="Common Modal dialog box title"
-      fullscreen="true"
+      title="表数据"
+      :fullscreen="true"
       @on-ok="ok"
       >
       <i-table :columns="columnsDetail" :data="detailDatas"></i-table>
+    </Modal>
+    <Modal
+      v-model="rowModal"
+      title="详细信息"
+      @on-ok="sureClose"
+    >
+        <Row v-for="item in columnsDetail" v-if="item.title !== 'action'">
+          <i-col span="8">{{item.title}}</i-col>
+          <i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>
+        </Row>
     </Modal>
   </div>
 </template>
@@ -36,10 +46,12 @@
   import { getListData } from '@/api/data'
   import { getTableData } from '@/api/data'
   import  { getFormData } from '@/api/data'
+  import  { showDetail } from '@/api/data'
     export default {
         name: "data_form_child",
         data () {
           return {
+            rowModal: false,
             // 查看莫泰框
             modal1: false,
             // 当前选中的列表id
@@ -158,13 +170,18 @@
           //  查看的表头配置信息
             columnsDetail: [],
           //  查看 模态框表格数据
-            detailDatas: []
+            detailDatas: [],
+          //  当前行数据详情
+            rowDetail: {}
           }
         },
       mounted () {
           this.getTabsData()
       },
-        methods: {
+      methods: {
+          sureClose () {
+            this.rowModal = false
+          },
           // 查看
           showDetail () {
             this.modal1 = true
@@ -203,6 +220,22 @@
             }
             this.getTableDatas (row[0].id)
           },
+          showIndex (id) {
+            console.log(id)
+            let obj = {
+              "tableId" : this.treeId,              //[必填]表单主键ID，由当面所在表单查询页面维护
+              "dataIdList":[id]
+            }
+            showDetail(obj).then((res) => {
+              // console.log(res.data.data)data
+              if (res.data.data.length > 0) {
+                this.rowModal = true
+                this.rowDetail = res.data.data[0]
+              } else {
+                this.$Message.info(res.data.message)
+              }
+            })
+          },
           getTableDatas (id) {
             console.log(id, 'ppppppwww');
             this.treeId = id;
@@ -213,11 +246,47 @@
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
                 // let obj = {title: '', key: ''}
-                this.columnsDetail.push({title: value.chineseName, key: value.englishName})
+                // if (value.title === 'action') {
+                //   return
+                // }
+                this.columnsDetail.push(
+                  {
+                    title: value.chineseName,
+                    key: value.englishName
+                  }
+                    )
+              })
+              this.columnsDetail.push({
+                title: 'action',
+                key: 'action',
+                width: 100,
+                align: 'center',
+                render: (h, params) => {
+                  return h('Button', {
+                    on: {
+                      click: () => {
+                        this.showIndex(params.row.id)
+                      }
+                    }
+                  }, '查看')
+                }
               })
             })
           }
-        }
+        },
+      filters: {
+          isObj: function (value) {
+            console.log(typeof value, 'sssssssssssssss')
+            if (typeof value === 'undefined') {
+              return
+            }
+            if (typeof value === 'object') {
+              return value.displayValue
+            } else {
+              return value
+            }
+          }
+      }
     }
 </script>
 

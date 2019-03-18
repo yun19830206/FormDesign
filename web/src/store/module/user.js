@@ -96,6 +96,7 @@ export default {
           commit('setToken', '')
           commit('setAccess', [])
           resolve()
+          localStorage.setItem('login','')
         }).catch(err => {
           reject(err)
         })

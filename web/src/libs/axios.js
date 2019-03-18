@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -48,7 +49,15 @@ class HttpRequest {
     instance.interceptors.response.use(res => {
       this.destroy(url)
       const { data, status } = res
-      return { data, status }
+      console.log(res)
+      let contentType =  res.headers['content-type']
+      if (contentType.includes('text/html')) {
+        localStorage.setItem('login','')
+        router.push('/login')
+        return Promise.reject({})
+      }else{
+        return { data, status }
+      }
     }, error => {
       this.destroy(url)
       let errorInfo = error.response

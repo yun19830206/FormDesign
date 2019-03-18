@@ -78,6 +78,10 @@ export default {
 };
 </script>
 <style scoped>
+.table-title {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
 </style>
 
 

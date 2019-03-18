@@ -12,19 +12,9 @@ export const login = ({ userName, password }) => {
   })
 }
 
-export const getUserInfo = (token) => {
+export const logout = () => {
   return axios.request({
-    url: 'get_info',
-    params: {
-      token
-    },
-    method: 'get'
-  })
-}
-
-export const logout = (token) => {
-  return axios.request({
-    url: 'logout',
+    url: 'aiassistant/user/login/userlogout ',
     method: 'post'
   })
 }

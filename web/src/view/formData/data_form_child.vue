@@ -12,34 +12,34 @@
       </i-col>
       <i-col span="20">
         <row>
-          <Button type="primary" style="float: right;margin-left: 15px;" :disabled="this.treeId === ''">新增</Button>
-          <Button type="success" style="float: right;" @click="showDetail" :disabled="this.treeId === ''">查看</Button>
+          <Button type="primary" style="float: right;margin-left: 15px;" @click="ok" :disabled="this.treeId === ''">新增</Button>
+          <!--<Button type="success" style="float: right;" @click="showDetail" :disabled="this.treeId === ''">查看</Button>-->
         </row>
-        <p class="table-title">表单配置展示</p>
-        <i-table :columns="columnsSetting" :data="dataSetting"></i-table>
+        <!--<p class="table-title">表单配置展示</p>-->
+        <!--<i-table :columns="columnsSetting" :data="dataSetting"></i-table>-->
+        <!--<p class="table-title">表单数据展示</p>-->
+        <!--查询条件表-->
+        <p class="table-title">查询条件表</p>
+        <i-table :columns="searchColumns" :data="searchDatas"></i-table>
         <p class="table-title">表单数据展示</p>
-        <i-table :columns="columns1" :data="data1"></i-table>
+        <i-table :columns="columnsDetail" :data="detailDatas"></i-table>
+        <!--展示详细信息-->
+        <!--<i-table :columns="columns1" :data="data1"></i-table>-->
       </i-col>
     </Row>
-    <!--查看-->
-    <Modal
-      v-model="modal1"
-      title="表数据"
-      :fullscreen="true"
-      @on-ok="ok"
-      >
-      <i-table :columns="columnsDetail" :data="detailDatas"></i-table>
-    </Modal>
     <Modal
       v-model="rowModal"
       title="详细信息"
       @on-ok="sureClose"
     >
-        <Row v-for="item in columnsDetail" v-if="item.title !== 'action'">
+        <Row v-for="item in columnsDetail" :key="item.id" v-if="item.title !== 'action'">
           <i-col span="8">{{item.title}}</i-col>
           <i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>
         </Row>
     </Modal>
+    <createItem :showModal="modal1" :tableColumnConfigList="data1" @close="modal1 = false" @getVal="getVal"></createItem>
+    <!--自定义增加组件-->
+    <!-- <a :modal="modal1" :obj="data1"></a> -->
   </div>
 </template>
 <script>
@@ -47,13 +47,16 @@
   import { getTableData } from '@/api/data'
   import  { getFormData } from '@/api/data'
   import  { showDetail } from '@/api/data'
+  import createItem from '../components/createItem.vue'
     export default {
         name: "data_form_child",
+        components: {createItem},
         data () {
           return {
             rowModal: false,
-            // 查看莫泰框
+            // 添加传递数值
             modal1: false,
+            data1: [],
             // 当前选中的列表id
             treeId: '',
             typesObject: {
@@ -163,10 +166,26 @@
                 }
               }
             ],
+            // 查询条件表规则
+            searchColumns: [
+              {title: '名称',
+              key: 'tableColumnConfig',
+              render: (h, params) => {
+                return h ('span', params.row.tableColumnConfig.chineseName)
+                }
+              },
+              {
+                title: '查询条件',
+                key: 'queryType',
+                render: (h, params) => {
+                  return h ('span', this.conditionsObject[params.row.queryType])
+                }
+              }
+            ],
+            // 查询条件表数据
+            searchDatas: [],
             // 表单配置表格
             dataSetting: [],
-            // 表单数据表格
-            data1: [],
           //  查看的表头配置信息
             columnsDetail: [],
           //  查看 模态框表格数据
@@ -179,12 +198,17 @@
           this.getTabsData()
       },
       methods: {
+        getVal (data) {
+          console.log(data)
+          setTimeout(_ => {
+            this.modal1 = false
+          },1000)
+        },
           sureClose () {
             this.rowModal = false
           },
           // 查看
           showDetail () {
-            this.modal1 = true
             let obj = {
               "pageNum" : 1,      //请求页码
               "pageSize" : 30,    //每页数量
@@ -196,10 +220,18 @@
             getFormData(obj).then((res) => {
               console.log(res.data.data, 'uuuuuuuuuuu')
               this.detailDatas = res.data.data.list
+              this.detailDatas.forEach((value) => {
+                let objKeys = Object.keys(value)
+                objKeys.forEach((val) => {
+                  if (typeof value[val] === 'object') {
+                    value[val] = value[val].displayValue
+                  }
+                })
+              })
             })
           },
           ok () {
-            this.modal1 = false
+            this.modal1 = true
           },
           getTabsData () {
             getListData().then((res) => {
@@ -237,17 +269,33 @@
             })
           },
           getTableDatas (id) {
-            console.log(id, 'ppppppwww');
-            this.treeId = id;
+            console.log(id, 'ppppppwww')
+            this.treeId = id
+            this.showDetail()
             getTableData(id).then((res) => {
-              console.log(res.data.data.tableConfig, 'ppppppptable');
-              this.data1 = res.data.data.tableColumnConfigList;
+              console.log(res.data.data.tableConfig, 'ppppppptable')
+              this.data1 = res.data.data.tableColumnConfigList
               this.dataSetting = [res.data.data.tableConfig]
+              this.searchDatas = res.data.data.tableQueryConfigList
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
                 // let obj = {title: '', key: ''}
                 // if (value.title === 'action') {
                 //   return
+                // }
+                // render: (h, params) => {
+                //   h ('span', function () {
+                //     console.log(params.row, '00000000000000', this)
+                //     // compange_name
+                //     if (typeof params.row[value.englishName] === 'undefined') {
+                //       return ''
+                //     }
+                //     if (typeof params.row[value.englishName] === 'object') {
+                //       return params.row[value.englishName].displayValue
+                //     } else {
+                //       return params.row[value.englishName]
+                //     }
+                //   })
                 // }
                 this.columnsDetail.push(
                   {
@@ -257,7 +305,7 @@
                     )
               })
               this.columnsDetail.push({
-                title: 'action',
+                title: '操作',
                 key: 'action',
                 width: 100,
                 align: 'center',

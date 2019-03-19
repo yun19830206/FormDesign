@@ -153,6 +153,15 @@ let routerArr = [
       hideInMenu: true
     },
     component: () => import('@/view/error-page/404.vue')
+  },
+
+  {
+    path: '/wechat_login',
+    name: 'wechat_login',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/wechat/wechat_login.vue')
   }
 ]
 

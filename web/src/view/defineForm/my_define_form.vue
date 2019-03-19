@@ -4,6 +4,7 @@
         <p class="table-title">表单配置展示</p>
         <Table :columns="columns" :data="tableData"></Table>
     </Row>
+    <button @click="mo = true">2222</button>
     <form-model 
     :tableColumnConfigList="tableColumnConfigList" 
     :modelShow="modelShow" 
@@ -15,21 +16,172 @@
     :tableQueryConfigListColumns="tableQueryConfigListColumns"
     :tableDisplayConfigListColumns="tableDisplayConfigListColumns"
     @close="modelShow = false" />
+
+    <createItem :showModal="mo" :tableColumnConfigList="data"  @close="mo = false"  />
     
   </div>
 </template>
 
 <script>
-import formModel from "../components/defineForm/formModel.vue";
-import { getFormConfigData, getMyFormData } from "@/api/data";
+import formModel from "../components/defineForm/formModel.vue"
+import createItem from "../components/createItem.vue"
+import { getFormConfigData, getMyFormData } from "@/api/data"
 console.log(getFormConfigData);
 export default {
   name: "directive_page",
   components: {
-    formModel
+    formModel,
+    createItem
   },
   data() {
     return {
+      mo: false,
+      data:[
+        {
+                "id": 7,
+                "tableId": 3,
+                "colSeq": 1,
+                "chineseName": "公司法定名称",
+                "englishName": "compange_name",
+                "colType": "COLUMN_FOREIGN_KEY",
+                "colLength": 11,
+                "dropValue": "",
+                "fkValue": 1,
+                "defaultValue": "",
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T18:33:34.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 8,
+                "tableId": 3,
+                "colSeq": 2,
+                "chineseName": "姓名",
+                "englishName": "user_name",
+                "colType": "COLUMN_SIGN_LINE_TEXT",
+                "colLength": 32,
+                "dropValue": "",
+                "fkValue": null,
+                "defaultValue": "",
+                "displayColumn": 1,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T18:51:21.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 9,
+                "tableId": 3,
+                "colSeq": 3,
+                "chineseName": "性别",
+                "englishName": "user_sex",
+                "colType": "COLUMN_DROP_BOX",
+                "colLength": 8,
+                "dropValue": "男,女",
+                "fkValue": null,
+                "defaultValue": "男",
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T18:55:53.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 10,
+                "tableId": 3,
+                "colSeq": 4,
+                "chineseName": "部门",
+                "englishName": "department",
+                "colType": "COLUMN_SIGN_LINE_TEXT",
+                "colLength": 64,
+                "dropValue": null,
+                "fkValue": null,
+                "defaultValue": null,
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T18:57:31.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 11,
+                "tableId": 3,
+                "colSeq": 5,
+                "chineseName": "职位",
+                "englishName": "position",
+                "colType": "COLUMN_SIGN_LINE_TEXT",
+                "colLength": 32,
+                "dropValue": null,
+                "fkValue": null,
+                "defaultValue": null,
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T18:58:30.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 12,
+                "tableId": 3,
+                "colSeq": 6,
+                "chineseName": "手机号",
+                "englishName": "phone_number",
+                "colType": "COLUMN_SIGN_LINE_TEXT",
+                "colLength": 16,
+                "dropValue": null,
+                "fkValue": null,
+                "defaultValue": null,
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T19:00:16.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 13,
+                "tableId": 3,
+                "colSeq": 7,
+                "chineseName": "QQ微信",
+                "englishName": "qq_wx",
+                "colType": "COLUMN_SIGN_LINE_TEXT",
+                "colLength": 32,
+                "dropValue": null,
+                "fkValue": null,
+                "defaultValue": null,
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 0,
+                "createUser": 1,
+                "createTime": "2019-03-14T19:01:19.000+0000",
+                "tenantId": 200
+            },
+            {
+                "id": 14,
+                "tableId": 3,
+                "colSeq": 8,
+                "chineseName": "邮箱",
+                "englishName": "email",
+                "colType": "COLUMN_EMAIL",
+                "colLength": 32,
+                "dropValue": null,
+                "fkValue": null,
+                "defaultValue": null,
+                "displayColumn": 0,
+                "uniqued": 0,
+                "empty": 1,
+                "createUser": 1,
+                "createTime": "2019-03-14T19:02:30.000+0000",
+                "tenantId": 200
+            }
+      ],
       modelShow: false,
       typesObject: {
         'COLUMN_SIGN_LINE_TEXT':'单行文本框',

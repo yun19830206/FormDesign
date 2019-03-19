@@ -47,7 +47,7 @@
             xhr.send(null)
         } else if(options.type == "POST"){
             xhr.open(options.type,options.url,options.async);
-            xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Content-Type","application/json");
             xhr.send(params);
         }
         xhr.onreadystatechange = function(){

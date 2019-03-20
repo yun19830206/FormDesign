@@ -1,5 +1,5 @@
 <template>
-    <FormItem :label="info.chineseName">
+    <FormItem :prop="info.englishName"  :label="info.chineseName">
         <Input v-model="formItem.input" :placeholder="'请输入'+ info.chineseName"></Input>
     </FormItem>
 </template>

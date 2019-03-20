@@ -162,6 +162,30 @@ let routerArr = [
       hideInMenu: true
     },
     component: () => import('@/view/wechat/wechat_login.vue')
+  },
+  {
+    path: '/wechat_form',
+    name: 'wechat_form',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/wechat/wechat_form.vue')
+  },
+  {
+    path: '/wechat_form_display/:id',
+    name: 'wechat_form_display',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/wechat/wechat_form_display.vue')
+  },
+  {
+    path: '/wechat_form_add/:id',
+    name: 'wechat_form_add',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/wechat/wechat_form_add.vue')
   }
 ]
 

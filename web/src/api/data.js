@@ -49,3 +49,12 @@ export const showDetail = (obj) => {
     method: 'post'
   })
 }
+// aiassistant/formdata/add/formrowdata?wxcode=ldkclk5l5k 提交新增数据
+export const addData = (obj) => {
+  return axios.request({
+    headers: {"Content-Type": "application/json"},
+    url: 'aiassistant/formdata/add/formrowdata?wxcode=ldkclk5l5k',
+    data: obj,
+    method: 'post'
+  })
+}

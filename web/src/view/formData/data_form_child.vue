@@ -1,30 +1,37 @@
 <template>
-  <div>
-    <!--<Radio-group :model.sync="buttonId" type="button" size="large" @on-change="getTableDatas(buttonId)">-->
-      <!--<Radio v-for="item in tabsDatas" :value="item.id">{{item.chineseName}}</Radio>-->
-    <!--</Radio-group>-->
-    <!--<div>-->
-      <!--<i-table :columns="columns1" :data="data1"></i-table>-->
-    <!--</div>-->
-    <Row>
-      <i-col span="4">
+  <div class="main">
+    <Row class="body-area">
+      <i-col span="6" class="leftArea">
         <Tree :data="tabsDatas" @on-select-change="onSelectChange"></Tree>
       </i-col>
-      <i-col span="20">
-        <row>
-          <Button type="primary" style="float: right;margin-left: 15px;" @click="ok" :disabled="this.treeId === ''">新增</Button>
-          <!--<Button type="success" style="float: right;" @click="showDetail" :disabled="this.treeId === ''">查看</Button>-->
-        </row>
-        <!--<p class="table-title">表单配置展示</p>-->
-        <!--<i-table :columns="columnsSetting" :data="dataSetting"></i-table>-->
-        <!--<p class="table-title">表单数据展示</p>-->
+      <i-col span="18" class="rightArea">
+        <!--<row>-->
+          <!--<Button type="primary" style="float: right;margin-left: 15px;" @click="ok" :disabled="this.treeId === ''">新增</Button>-->
+        <!--</row>-->
         <!--查询条件表-->
-        <p class="table-title">查询条件表</p>
-        <i-table :columns="searchColumns" :data="searchDatas"></i-table>
+        <p class="table-title">查询条件</p>
+        <Row>
+          <i-col span="2" class="line-30">
+            名称:
+          </i-col>
+          <i-col span="6">
+            <i-select :model.sync="selectValue1" style="width:200px">
+              <i-option v-for="item in searchDatas" :value="item.tableColumnConfig.chineseName">{{item.tableColumnConfig.chineseName}}</i-option>
+            </i-select>
+          </i-col>
+          <i-col span="2" class="line-30">
+            查询条件:
+          </i-col>
+          <i-col span="6">
+            <i-select :model.sync="selectValue2" style="width:200px">
+              <i-option v-for="item in searchDatas" :value="conditionsObject[item.queryType]">{{conditionsObject[item.queryType]}}</i-option>
+            </i-select>
+          </i-col>
+        </Row>
+        <!--<i-table :columns="searchColumns" :data="searchDatas"></i-table>-->
         <p class="table-title">表单数据展示</p>
         <i-table :columns="columnsDetail" :data="detailDatas"></i-table>
-        <!--展示详细信息-->
-        <!--<i-table :columns="columns1" :data="data1"></i-table>-->
+        <Page :total="total" prev-text="上一页" next-text="下一页"  @on-change="current" style="float: right;"/>
       </i-col>
     </Row>
     <Modal
@@ -37,7 +44,7 @@
           <i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>
         </Row>
     </Modal>
-    <createItem :showModal="modal1" :tableColumnConfigList="data1" @close="modal1 = false" @getVal="getVal"></createItem>
+    <createItem :showModal="modal1" :tableColumnConfigList="nowTreeData" @close="modal1 = false" @getVal="getVal"></createItem>
     <!--自定义增加组件-->
     <!-- <a :modal="modal1" :obj="data1"></a> -->
   </div>
@@ -47,15 +54,25 @@
   import { getTableData } from '@/api/data'
   import  { getFormData } from '@/api/data'
   import  { showDetail } from '@/api/data'
+  import  { addData } from '@/api/data'
   import createItem from '../components/createItem.vue'
     export default {
         name: "data_form_child",
         components: {createItem},
         data () {
           return {
-            rowModal: false,
-            // 添加传递数值
+            // 当前新增的表名
+            tableName: '',
+            // 数据总数
+            total: 0,
+            // 新增传递的值
+            nowTreeData: [],
             modal1: false,
+            // 名称下拉
+            selectValue1: '',
+            // 查询条件
+            selectValue2: '',
+            rowModal: false,
             data1: [],
             // 当前选中的列表id
             treeId: '',
@@ -198,9 +215,29 @@
           this.getTabsData()
       },
       methods: {
+        current (val) {
+          console.log(val)
+          this.showDetail(val)
+        },
         getVal (data) {
           console.log(data)
-          setTimeout(_ => {
+          let keys = Object.keys(data)
+          let list = []
+          keys.forEach((value) => {
+            list.push({
+              columnName: value,
+              columnValue: data[value]
+            })
+          })
+          let obj = {
+            'tableId' : this.treeId,                //[必填]表单主键ID，由当面所在表单查询页面维护
+            "tableName": this.tableName,   //[必填]表单配置的表名称
+            "columnValueList": list
+          }
+          addData(obj).then((res) => {
+            console.log(res.data, 'pppppppppppp')
+          })
+          setTimeout(() => {
             this.modal1 = false
           },1000)
         },
@@ -208,10 +245,10 @@
             this.rowModal = false
           },
           // 查看
-          showDetail () {
+          showDetail (page) {
             let obj = {
-              "pageNum" : 1,      //请求页码
-              "pageSize" : 30,    //每页数量
+              "pageNum" : page,      //请求页码
+              "pageSize" : 10,    //每页数量
               "dto":{             //业务查询条件
                 "tableId" : this.treeId,   //表单主键ID，由菜单点击事件获得
                 "queryCondition":{}
@@ -220,6 +257,7 @@
             getFormData(obj).then((res) => {
               console.log(res.data.data, 'uuuuuuuuuuu')
               this.detailDatas = res.data.data.list
+              this.total = res.data.data.total
               this.detailDatas.forEach((value) => {
                 let objKeys = Object.keys(value)
                 objKeys.forEach((val) => {
@@ -237,8 +275,63 @@
             getListData().then((res) => {
               console.log(res.data.data);
               this.tabsDatas = res.data.data;
+              this.getTableDatas(this.tabsDatas[0])
+              this.tableName = this.tabsDatas[0].chineseName
               this.tabsDatas.forEach((value, index) => {
                 value.title = value.chineseName
+                value.render =  (h, { root, node, data }) => {
+                  return h('span', {
+                    style: {
+                      display: 'inline-block',
+                      width: '100%'
+                    },
+                  }, [
+                    h('span',{
+                        on: {
+                          click: (e) => {
+                            // console.log(document.getElementsByClassName('test'), 'sssssssss')
+                            // for (let key in document.getElementsByClassName('test')) {
+                            //   document.getElementsByClassName('test')[key].style.cssText="background-color: #fff;"
+                            // }
+                            var dom = document.getElementsByClassName('test');
+                            for(var i=0,len=dom.length; i<len; i++){
+                              dom[i].style.backgroundColor = '#fff';
+                            }
+                            // document.getElementsByClassName('test').style.background='#ffffff'
+                            setTimeout(() => {
+                              e.target.style.backgroundColor = "#f06"
+                            }, 200)
+                            // console.log(e, data, root, node, 'ppppppppppp')
+                            this.getTableDatas(data)
+                          }
+                        },
+                        style: {
+                          cursor: 'point'
+                        },
+                      class:['test']
+                    }, data.title),
+                  h('button',{
+                    style: {
+                      cursor: 'point',
+                      float: 'right',
+                      marginRight: '20px'
+                    }
+                  }, [
+                    h('span', {
+                      props: {
+                        icon: 'ios-add',
+                        // type: 'primary'
+                      },
+                      style: {
+                        width: '10px',
+                        cursor: 'point'
+                      },
+                      on: {
+                        click: () => { this.getNowTreeData(data.id) }
+                      }
+                    }, '+')
+                  ])])
+                }
                 // if (index === 0) {
                 //   value.selected = true
                 // }
@@ -250,7 +343,7 @@
             if (row.length === 0) {
               return
             }
-            this.getTableDatas (row[0].id)
+            this.getTableDatas (row[0])
           },
           showIndex (id) {
             console.log(id)
@@ -268,15 +361,27 @@
               }
             })
           },
-          getTableDatas (id) {
+          getNowTreeData(id) {
+            getTableData(id).then((res) => {
+              this.nowTreeData = res.data.data.tableColumnConfigList
+              this.modal1 = true
+            })
+          },
+          getTableDatas (data) {
+            let id = data.id
             console.log(id, 'ppppppwww')
             this.treeId = id
-            this.showDetail()
+            this.tableName = data.chineseName
+            this.showDetail(1)
             getTableData(id).then((res) => {
               console.log(res.data.data.tableConfig, 'ppppppptable')
               this.data1 = res.data.data.tableColumnConfigList
               this.dataSetting = [res.data.data.tableConfig]
               this.searchDatas = res.data.data.tableQueryConfigList
+              this.selectValue1 = this.searchDatas[0].tableColumnConfig.chineseName
+              this.selectValue2 = this.conditionsObject[this.searchDatas[0].queryType]
+              console.log(this.selectValue2, 'ppppppppppp');
+              //  this.conditionsObject[params.row.queryType]
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
                 // let obj = {title: '', key: ''}
@@ -300,7 +405,8 @@
                 this.columnsDetail.push(
                   {
                     title: value.chineseName,
-                    key: value.englishName
+                    key: value.englishName,
+                    width: 150
                   }
                     )
               })
@@ -339,5 +445,32 @@
 </script>
 
 <style scoped>
-
+  .leftArea {
+    border: 1px solid #ddd;
+    height: 100%;
+    padding-right: 5px;
+  }
+  .rightArea {
+    border: 1px solid #ddd;
+    height: 100%;
+    padding: 0 10px;
+  }
+  .main {
+    height: 100%;
+  }
+  .body-area {
+    height: 100%;
+  }
+  .line-30 {
+    height: 30px;
+    line-height: 30px;
+  }
+  .table-title {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 16px 0;
+  }
+  .test {
+    cursor: pointer;
+  }
 </style>

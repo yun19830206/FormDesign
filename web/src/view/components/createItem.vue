@@ -5,7 +5,7 @@
     :loading="loading"
     @on-ok="ok"
     @on-cancel="cancel">
-    <Form :model="formItem" :label-width="80">
+    <Form ref="formInline" :rules="ruleInline" :model="formItem" :label-width="80">
       <div ref="item" v-for="item in tableColumnConfigList" :key="item.id + '-' + item.tableId" :is="componentName[item.colType]" :info="item"></div>
     </Form>
   </Modal>
@@ -71,19 +71,36 @@ export default {
       set (val) {
         this.$emit('close',val)
       }
+    },
+    ruleInline () {
+      return this.tableColumnConfigList.reduce((res, item) => {
+        if (item.empty === 0 ){
+          res[item.englishName] = [{ required: true, message: '请输入' + item.chineseName, trigger: 'blur' }]
+        }
+        return res
+      },{})
     }
   },
   methods: {
     ok () {
-      let data = {}
-      this.$refs.item.map( i => {
-        Object.assign(data,i.sendVal())
+      this.$refs.formInline.validate((valid) => {
+          if (valid) {
+              let data = {}
+              this.$refs.item.map( i => {
+                Object.assign(data,i.sendVal())
+              })
+              this.$emit('getVal',data)
+          } else {
+              this.loading = false
+          }
       })
-      this.$emit('getVal',data)
     },
     cancel () {
       this.$emit('close')
     }
+  },
+  created () {
+    console.log(this.ruleInline)
   }
 }
 </script>

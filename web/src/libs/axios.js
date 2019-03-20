@@ -47,11 +47,12 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
+      
       this.destroy(url)
       const { data, status } = res
-      console.log(res)
+     
       let contentType =  res.headers['content-type']
-      if (contentType.includes('text/html')) {
+      if (contentType.includes('text/html') || status === 404) {
         localStorage.setItem('login','')
         router.push('/login')
         return Promise.reject({})
@@ -59,10 +60,16 @@ class HttpRequest {
         return { data, status }
       }
     }, error => {
+      if (error.response.status === 404){
+        localStorage.setItem('login','')
+        router.push('/login')
+        return Promise.reject({})
+      }
       this.destroy(url)
       let errorInfo = error.response
       if (!errorInfo) {
         const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
+        
         errorInfo = {
           statusText,
           status,

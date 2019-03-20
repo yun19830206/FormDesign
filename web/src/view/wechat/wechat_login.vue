@@ -62,6 +62,9 @@ export default {
       login(data).then( res => {
         if (res.data.code === 200) {
           this.$toast.success('绑定成功！')
+          setTimeout(() => {
+            this.wx.closeWindow()
+          }, 600)
         }else{
           this.$toast.fail('提交失败！')
         }

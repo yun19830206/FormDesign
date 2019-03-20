@@ -1,7 +1,5 @@
 <template>
-    <FormItem :prop="info.englishName" :label="info.chineseName">
-        <Input v-model="formItem.input" :placeholder="'请输入'+ info.chineseName"></Input>
-    </FormItem>
+    <van-field v-model="formItem.input" :placeholder="'请输入' + info.chineseName" />
 </template>
 <script>
 export default {
@@ -10,7 +8,7 @@ export default {
             type:Object
         }
     },
-   data () {
+    data () {
        return  {
             formItem: {
                 input:''
@@ -30,6 +28,5 @@ export default {
 <style scoped>
 
 </style>
-
 
 

@@ -1,5 +1,5 @@
 <template>
-    <FormItem :label="info.chineseName">
+    <FormItem :prop="info.englishName" :label="info.chineseName">
         <Upload action="//jsonplaceholder.typicode.com/posts/">
             <Button icon="ios-cloud-upload-outline">Upload files</Button>
         </Upload>

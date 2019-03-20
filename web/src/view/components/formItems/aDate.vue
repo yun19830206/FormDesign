@@ -1,5 +1,5 @@
 <template>
-    <FormItem :label="info.chineseName">
+    <FormItem :prop="info.englishName" :label="info.chineseName">
         <Row>
             <Col span="24">
                 <DatePicker type="date" placeholder="请选择日期" v-model="formItem.date"></DatePicker>

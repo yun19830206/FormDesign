@@ -1,5 +1,5 @@
 <template>
-    <FormItem :label="info.chineseName">
+    <FormItem :prop="info.englishName" :label="info.chineseName">
         <Input v-model="formItem.textarea" type="textarea" :autosize="{minRows: 2,maxRows: 5}" :placeholder="'请输入'+ info.chineseName"></Input>
     </FormItem>
 </template>

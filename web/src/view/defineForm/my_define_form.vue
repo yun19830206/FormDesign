@@ -4,7 +4,6 @@
         <p class="table-title">表单配置展示</p>
         <Table :columns="columns" :data="tableData"></Table>
     </Row>
-    <button @click="mo = true">2222</button>
     <form-model 
     :tableColumnConfigList="tableColumnConfigList" 
     :modelShow="modelShow" 

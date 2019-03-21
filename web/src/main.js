@@ -17,7 +17,9 @@ import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import Vant from 'vant';
+// import { XTable } from 'vux'
 import 'vant/lib/index.css';
+
 
 Vue.use(Vant);
 // 实际打包时应该不引入mock
@@ -45,6 +47,9 @@ Vue.prototype.$config = config
  * 全局注册微信sdk
  */
 Vue.prototype.wx = wx
+
+
+// Vue.component('x-table', XTable)
 
 /**
  * 注册指令

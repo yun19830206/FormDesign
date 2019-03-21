@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <van-list
+  <div style="overflow: auto;">
+    <!-- <van-list
       :finished="finished"
       finished-text="没有更多了"
     >
@@ -14,7 +14,15 @@
       </span>
       </van-cell>
       
-    </van-list>
+    </van-list> -->
+    <table class="gridtable">
+      <tr><th nowrap="nowrap" v-for="cg in configData" :key="cg.id">{{cg.tableColumnConfig.chineseName}}</th></tr>
+      <tr v-for="l in list" :key="l.id">
+        <td nowrap="nowrap" v-for="cg in configData" :key="cg.id + '' + l.id">
+          {{computedVal(l,cg)}}
+        </td>
+      </tr>
+    </table>
     <van-dialog
       v-model="show"
     >
@@ -46,7 +54,8 @@ export default {
       activeItem:{},
       id:'',
       pageNo:1,
-      list:[]
+      list:[],
+      configData:[]
     }
   },
   created () {
@@ -55,10 +64,17 @@ export default {
     this.onLoad(this.id)
   },
   methods: {
+    computedVal(l,cg) {
+      if (cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME') {
+        return new Date(l[cg.tableColumnConfig.englishName]).format('yyyy-MM-dd hh:mm:ss')
+      }else {
+        return l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue || l[cg.tableColumnConfig.englishName]) : ''
+      }
+    },
     onLoad (id) {
         getFormConfigData(id).then( res => {
           if (res.data.code === 200) {
-            this.configData = res.data.data.tableColumnConfigList
+            this.configData = res.data.data.tableDisplayConfigList
             this.loadData(1)
           }else{
             
@@ -96,6 +112,28 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
+}
+table.gridtable {
+font-family: verdana,arial,sans-serif;
+font-size:11px;
+color:#333333;
+border-width: 1px;
+border-color: #eee;
+border-collapse: collapse;
+}
+table.gridtable th {
+border-width: 1px;
+padding: 8px;
+border-style: solid;
+border-color: #eee;
+background-color: #dedede;
+}
+table.gridtable td {
+border-width: 1px;
+padding: 8px;
+border-style: solid;
+border-color: #eee;
+background-color: #ffffff;
 }
 </style>
 

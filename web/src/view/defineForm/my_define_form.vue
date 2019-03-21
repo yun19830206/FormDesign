@@ -311,7 +311,8 @@ export default {
         },
         {
           title: "能否为空",
-          key: "empty"
+          key: "empty",
+          render: this.renderTF('empty')
         }
       ],
       tableQueryConfigListColumns: [

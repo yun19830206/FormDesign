@@ -1,5 +1,14 @@
 <template>
-    <van-field v-model="formItem.input" :placeholder="'请输入' + info.chineseName" />
+    <div>
+        <van-cell :title="info.chineseName">
+        
+        <van-uploader slot="right-icon" :after-read="onRead"  multiple>
+            <van-icon  name="upgrade" />
+        </van-uploader>
+        </van-cell>
+    
+    </div>
+    
 </template>
 <script>
 export default {
@@ -20,6 +29,9 @@ export default {
             return {
                 [this.info.englishName]:this.formItem.input
             }
+        },
+        onRead () {
+            
         }
     }
     

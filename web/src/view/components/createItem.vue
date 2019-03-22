@@ -6,7 +6,7 @@
     @on-ok="ok"
     @on-cancel="cancel">
     <Form ref="formInline" :rules="ruleInline" :model="formItem" :label-width="80">
-      <div ref="item" v-for="item in tableColumnConfigList" :key="item.id + '-' + item.tableId" :is="componentName[item.colType]" :info="item"></div>
+      <div ref="item" :form_validate="ruleInline" v-for="item in tableColumnConfigList" :key="item.id + '-' + item.tableId" :is="componentName[item.colType]" :info="item"></div>
     </Form>
   </Modal>
 </template>
@@ -83,8 +83,10 @@ export default {
   },
   methods: {
     ok () {
+      this.loading = true
       this.$refs.formInline.validate((valid) => {
           if (valid) {
+            cosole.log('346547')
               let data = {}
               this.$refs.item.map( i => {
                 Object.assign(data,i.sendVal())
@@ -93,6 +95,9 @@ export default {
           } else {
               this.loading = false
           }
+      })
+      this.$nextTick(_ => {
+        this.loading = true
       })
     },
     cancel () {

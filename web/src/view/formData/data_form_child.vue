@@ -1,48 +1,64 @@
 <template>
   <div class="main">
     <Row class="body-area">
-      <i-col span="6" class="leftArea">
-        <Tree :data="tabsDatas" @on-select-change="onSelectChange"></Tree>
-      </i-col>
-      <i-col span="18" class="rightArea">
+      <Col span="5" class="leftArea">
+        <!--<Tree :data="tabsDatas" @on-select-change="onSelectChange"></Tree>-->
+        <div v-for="item in tabsDatas" style="padding-left: 10px;padding-top: 15px;">
+          <Button style="width: 150px;" @click="getTableDatas(item.id)">{{item.chineseName}}</Button>
+          <span>  </span>
+          <Button @click="getNowTreeData(item.id)"><Icon type="md-add" /></Button>
+        </div>
+      </Col>
+      <Col span="19" class="rightArea">
         <!--<row>-->
           <!--<Button type="primary" style="float: right;margin-left: 15px;" @click="ok" :disabled="this.treeId === ''">新增</Button>-->
         <!--</row>-->
         <!--查询条件表-->
         <p class="table-title">查询条件</p>
         <Row>
-          <i-col span="2" class="line-30">
-            名称:
-          </i-col>
-          <i-col span="6">
-            <i-select :model.sync="selectValue1" style="width:200px">
-              <i-option v-for="item in searchDatas" :value="item.tableColumnConfig.chineseName">{{item.tableColumnConfig.chineseName}}</i-option>
-            </i-select>
-          </i-col>
-          <i-col span="2" class="line-30">
-            查询条件:
-          </i-col>
-          <i-col span="6">
-            <i-select :model.sync="selectValue2" style="width:200px">
-              <i-option v-for="item in searchDatas" :value="conditionsObject[item.queryType]">{{conditionsObject[item.queryType]}}</i-option>
-            </i-select>
-          </i-col>
+          <Col span="6" v-for="item in searchDatas">
+            <span>{{item.tableColumnConfig.chineseName}}</span>
+            <Input v-model="item.tableColumnConfig.value"/>
+          </Col>
+          <!--<Col span="2" class="line-30">-->
+            <!--名称:-->
+          <!--</Col>-->
+          <!--<Col span="6">-->
+            <!--<Select v-model="selectValue1" style="width:200px" @on-change="showDetail">-->
+              <!--<Option v-for="(item, index) in searchDatas" :key="index" :value="JSON.stringify(item.tableColumnConfig)">{{item.tableColumnConfig.chineseName}}</Option>-->
+            <!--</Select>-->
+          <!--</Col>-->
+          <!--<Col span="2" class="line-30">-->
+            <!--查询条件:-->
+          <!--</Col>-->
+          <!--<Col span="6">-->
+            <!--<Select v-model="selectValue2" style="width:200px" @on-change="showDetail">-->
+              <!--<Option v-for="item in searchDatas" :key="item.queryType" :value="item.queryType">{{conditionsObject[item.queryType]}}</Option>-->
+            <!--</Select>-->
+          <!--</Col>-->
+          <!--<span v-for="item in searchDatas">{{item.queryType}}</span>-->
         </Row>
         <!--<i-table :columns="searchColumns" :data="searchDatas"></i-table>-->
         <p class="table-title">表单数据展示</p>
         <i-table :columns="columnsDetail" :data="detailDatas"></i-table>
         <Page :total="total" prev-text="上一页" next-text="下一页"  @on-change="current" style="float: right;"/>
-      </i-col>
+      </Col>
     </Row>
     <Modal
       v-model="rowModal"
       title="详细信息"
       @on-ok="sureClose"
     >
-        <Row v-for="item in columnsDetail" :key="item.id" v-if="item.title !== 'action'">
-          <i-col span="8">{{item.title}}</i-col>
-          <i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>
-        </Row>
+        <!--<Row v-for="item in columnsDetail" :key="item.id" v-if="item.title !== 'action'">-->
+          <!--<i-col span="8">{{item.title}}</i-col>-->
+          <!--<i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>-->
+        <!--</Row>-->
+        <table class="ivu-table table" style="width: 400px;text-align: center;">
+          <tr class="ivu-table-row" v-for="item in columnsDetail" :key="item.id">
+            <td>{{item.key === 'action' ? '' : item.title}}</td>
+            <td>{{rowDetail[item.key] | isObj}}</td>
+          </tr>
+        </table>
     </Modal>
     <createItem :showModal="modal1" :tableColumnConfigList="nowTreeData" @close="modal1 = false" @getVal="getVal"></createItem>
     <!--自定义增加组件-->
@@ -61,6 +77,17 @@
         components: {createItem},
         data () {
           return {
+            modalColum: [
+              {
+                title: '名称',
+                key: 'name'
+              },
+              {
+                title: '值',
+                key: 'value'
+              }
+            ],
+            modalDetails: [],
             // 当前新增的表名
             tableName: '',
             // 数据总数
@@ -208,7 +235,9 @@
           //  查看 模态框表格数据
             detailDatas: [],
           //  当前行数据详情
-            rowDetail: {}
+            rowDetail: {},
+          //  当前页面页码
+            pageNumber: 1
           }
         },
       mounted () {
@@ -216,11 +245,12 @@
       },
       methods: {
         current (val) {
-          console.log(val)
-          this.showDetail(val)
+          // console.log(val)
+          this.pageNumber = val
+          this.showDetail()
         },
         getVal (data) {
-          console.log(data)
+          // console.log(data)
           let keys = Object.keys(data)
           let list = []
           keys.forEach((value) => {
@@ -235,7 +265,7 @@
             "columnValueList": list
           }
           addData(obj).then((res) => {
-            console.log(res.data, 'pppppppppppp')
+            // console.log(res.data, 'pppppppppppp')
           })
           setTimeout(() => {
             this.modal1 = false
@@ -244,14 +274,24 @@
           sureClose () {
             this.rowModal = false
           },
-          // 查看
-          showDetail (page) {
+          // 分页
+          showDetail () {
+          console.log(this.selectValue1, this.selectValue2, 'kkkkkkkkkk')
+            let sendObj = {englishName: '', chineseName: ''}
+            if (this.selectValue1 !== '') {
+              sendObj.englishName = JSON.parse(this.selectValue1).englishName
+              sendObj.chineseName = JSON.parse(this.selectValue1).chineseName
+            }
             let obj = {
-              "pageNum" : page,      //请求页码
+              "pageNum" : this.pageNumber,      //请求页码
               "pageSize" : 10,    //每页数量
               "dto":{             //业务查询条件
                 "tableId" : this.treeId,   //表单主键ID，由菜单点击事件获得
-                "queryCondition":{}
+                "queryCondition":{
+                  "queryColumnName": sendObj.englishName,              //查询条件ID的，英文名，也就是数据库表字段
+                  "queryColumnType": this.selectValue2,       //CONDITION_ENUM_LIKE=包含关系,CONDITION_ENUM_EQUAL=等于,CONDITION_ENUM_MORE=大于,CONDITION_ENUM_LESS=小于,CONDITION_ENUM_BETWEEN=介于之间
+                  "queryValue": sendObj.chineseName
+                }
               }
             }
             getFormData(obj).then((res) => {
@@ -273,7 +313,7 @@
           },
           getTabsData () {
             getListData().then((res) => {
-              console.log(res.data.data);
+              // console.log(res.data.data);
               this.tabsDatas = res.data.data;
               this.getTableDatas(this.tabsDatas[0])
               this.tableName = this.tabsDatas[0].chineseName
@@ -339,14 +379,14 @@
             })
           },
           onSelectChange (row) {
-            console.log(row, 'ppppp')
+            // console.log(row, 'ppppp')
             if (row.length === 0) {
               return
             }
             this.getTableDatas (row[0])
           },
           showIndex (id) {
-            console.log(id)
+            // console.log(id)
             let obj = {
               "tableId" : this.treeId,              //[必填]表单主键ID，由当面所在表单查询页面维护
               "dataIdList":[id]
@@ -367,41 +407,27 @@
               this.modal1 = true
             })
           },
-          getTableDatas (data) {
-            let id = data.id
-            console.log(id, 'ppppppwww')
+          getTableDatas (id) {
+            // console.log(id, 'ppppppwww')
             this.treeId = id
-            this.tableName = data.chineseName
-            this.showDetail(1)
+            // this.tableName = data.chineseName
+            this.showDetail(this.pageNumber)
             getTableData(id).then((res) => {
-              console.log(res.data.data.tableConfig, 'ppppppptable')
+              // console.log(res.data.data.tableConfig, 'ppppppptable')
               this.data1 = res.data.data.tableColumnConfigList
               this.dataSetting = [res.data.data.tableConfig]
+              // 获取所有搜索条件列表
               this.searchDatas = res.data.data.tableQueryConfigList
-              this.selectValue1 = this.searchDatas[0].tableColumnConfig.chineseName
-              this.selectValue2 = this.conditionsObject[this.searchDatas[0].queryType]
-              console.log(this.selectValue2, 'ppppppppppp');
+              this.searchDatas.forEach((value) => {
+                value.value = ''
+              })
+              console.log(this.searchDatas, 'uuuuuuuuuuuuuuuuuuuu')
+              // this.selectValue1 = this.searchDatas[0].tableColumnConfig.chineseName
+              // this.selectValue2 = this.conditionsObject[this.searchDatas[0].queryType]
+              // console.log(this.selectValue2, 'ppppppppppp');
               //  this.conditionsObject[params.row.queryType]
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
-                // let obj = {title: '', key: ''}
-                // if (value.title === 'action') {
-                //   return
-                // }
-                // render: (h, params) => {
-                //   h ('span', function () {
-                //     console.log(params.row, '00000000000000', this)
-                //     // compange_name
-                //     if (typeof params.row[value.englishName] === 'undefined') {
-                //       return ''
-                //     }
-                //     if (typeof params.row[value.englishName] === 'object') {
-                //       return params.row[value.englishName].displayValue
-                //     } else {
-                //       return params.row[value.englishName]
-                //     }
-                //   })
-                // }
                 this.columnsDetail.push(
                   {
                     title: value.chineseName,
@@ -410,6 +436,7 @@
                   }
                     )
               })
+              this.modalDetails = [...this.columnsDetail]
               this.columnsDetail.push({
                 title: '操作',
                 key: 'action',
@@ -425,12 +452,20 @@
                   }, '查看')
                 }
               })
+              // this.modalDetails.forEach((value) => {
+              //   value.name = value.title
+              //   if (typeof value === 'object') {
+              //     value.value = this.rowDetail[value.key]
+              //   } else {
+              //     value.value = this.rowDetail[value.key]
+              //   }
+              // })
             })
           }
         },
       filters: {
           isObj: function (value) {
-            console.log(typeof value, 'sssssssssssssss')
+            // console.log(typeof value, 'sssssssssssssss')
             if (typeof value === 'undefined') {
               return
             }

@@ -1,7 +1,17 @@
 import axios from 'axios'
 import store from '@/store'
+
 import router from '@/router'
 // import { Spin } from 'iview'
+
+function getCode (name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+  var r = window.location.search.substr(1).match(reg)
+  if (r != null) {
+      return unescape(r[2]);
+  }
+  return null;
+}
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
   let info = {
@@ -37,6 +47,16 @@ class HttpRequest {
     // 请求拦截
     instance.interceptors.request.use(config => {
       // 添加全局的loading...
+      let wxCode = getCode('code')
+      console.log(config)
+      if (wxCode) {
+        if (config.url.includes('?')) {
+          config.url += `&wxCode=${wxCode}`
+        }else {
+          config.url += `?wxCode=${wxCode}`
+        }
+      }
+      
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好
       }

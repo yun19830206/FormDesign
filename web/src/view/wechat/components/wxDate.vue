@@ -1,14 +1,18 @@
 <template>
     <div>
-        <van-cell @click="showSelect = !showSelect" :title="info.chineseName" :value="formItem.input" />
-        <van-datetime-picker
-        type="date"
-        v-model="val"
-        @cancel="onCancel" 
-        @confirm="onConfirm" 
-        v-if="showSelect" 
-        style="position:fixed;bottom:0;width:100%;z-index:1000;" 
-        />
+        <van-cell is-link @click="showSelect = !showSelect,err = false" :title="info.chineseName" :value="formItem.input" >
+            <span v-if="err" slot="right-icon" class="err-tip">请选择{{info.chineseName}}<van-icon name="arrow" /></span>
+        </van-cell>
+        <van-popup position="bottom" v-model="showSelect">
+            <van-datetime-picker
+            type="date"
+            :minDate="new Date(1900,1,1)"
+            v-model="val"
+            @cancel="onCancel" 
+            @confirm="onConfirm" 
+            />
+        </van-popup>
+        
     </div>
     
 </template>
@@ -24,7 +28,8 @@ export default {
             formItem: {
                 input:null
             },
-            val:null,
+            err:false,
+            val:new Date(),
             showSelect:false
         }
     },
@@ -32,6 +37,10 @@ export default {
     },
     methods: {
         sendVal () {
+            if (this.info.empty === 0 && this.formItem.input.trim() === '') {
+                this.err = true
+                return false
+            }
             return {
                 [this.info.englishName]:this.formItem.input
             }
@@ -49,7 +58,16 @@ export default {
 }
 </script>
 <style scoped>
-
+.err-tip{
+    height: 24px;
+    font-size: 14px;
+    color: #f44;
+    line-height: 24px;
+}
+.err-tip .van-icon{
+    font-size: 16px;
+    vertical-align: middle;
+}
 </style>
 
 

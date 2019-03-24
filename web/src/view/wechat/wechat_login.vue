@@ -42,6 +42,7 @@ export default {
   },
   created () {
     localStorage.setItem('login','login')
+    document.title = '云问CRM助手-绑定'
   },
   methods: {
     submitCount () {
@@ -63,7 +64,7 @@ export default {
         if (res.data.code === 200) {
           this.$toast.success('绑定成功！')
           setTimeout(() => {
-            
+            this.wx.closeWindow()
           }, 600);
         }else{
           this.$toast.fail('提交失败！')

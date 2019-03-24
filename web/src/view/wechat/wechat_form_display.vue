@@ -19,7 +19,7 @@
       <tr><th nowrap="nowrap" v-for="cg in configData" :key="cg.id">{{cg.tableColumnConfig.chineseName}}</th></tr>
       <tr v-for="l in list" :key="l.id">
         <td nowrap="nowrap" v-for="cg in configData" :key="cg.id + '' + l.id">
-          {{computedVal(l,cg)}}
+          <span v-html="computedVal(l,cg)"></span>
         </td>
       </tr>
     </table>
@@ -60,14 +60,23 @@ export default {
   },
   created () {
     localStorage.setItem('login','login')
+    document.title = '云问CRM助手-表单详情'
     this.id = this.$route.params.id
     this.onLoad(this.id)
   },
   methods: {
     computedVal(l,cg) {
       if (cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME') {
-        return new Date(l[cg.tableColumnConfig.englishName]).format('yyyy-MM-dd hh:mm:ss')
-      }else {
+        return new Date(l[cg.tableColumnConfig.englishName].replace(/-/g,'/').replace('T',' ')).format('yyyy-MM-dd hh:mm:ss')
+      } else if (cg.tableColumnConfig.colType === 'COLUMN_FILE') {
+        return ('<a href="' 
+                + this.baseUrl 
+                +'/aiassistant/file/get/file?fileId=' 
+                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].originValue || l[cg.tableColumnConfig.originValue]) : '') 
+                + '">' 
+                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue || l[cg.tableColumnConfig.displayValue]) : '') 
+                +'</a>')
+      } else {
         return l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue || l[cg.tableColumnConfig.englishName]) : ''
       }
     },
@@ -127,6 +136,7 @@ padding: 8px;
 border-style: solid;
 border-color: #eee;
 background-color: #dedede;
+font-size: 14px;
 }
 table.gridtable td {
 border-width: 1px;
@@ -134,6 +144,7 @@ padding: 8px;
 border-style: solid;
 border-color: #eee;
 background-color: #ffffff;
+font-size: 14px;
 }
 </style>
 

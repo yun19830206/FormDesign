@@ -1,6 +1,8 @@
 <template>
-    <FormItem :prop="info.englishName"  :label="info.chineseName">
-        <Input v-model="formItem.input" :placeholder="'请输入'+ info.chineseName"></Input>
+    <FormItem :label="info.chineseName">
+        <Select @on-change="valChange" :value="info.defaultValue">
+            <Option v-for="i in selectVal" :key="i.id" :value="i.id">{{i.displayValue}}</Option>
+        </Select>
     </FormItem>
 </template>
 <script>
@@ -8,20 +10,22 @@ export default {
     props: {
         info: {
             type:Object
+        },
+        foreignKeyValues: {
+            type:Object 
         }
     },
-    data () {
-       return  {
-            formItem: {
-                input:''
-            }
+    computed: {
+        selectVal () {
+            return this.foreignKeyValues[this.info.englishName]
         }
     },
     methods: {
-        sendVal () {
-            return {
-                [this.info.englishName]:this.formItem.input
-            }
+        valChange(val){
+            this.$emit('valing',{prop:this.info.englishName,val})
+        },
+        resetFields() {
+            this.$emit('valing',{prop:this.info.englishName,val:''})
         }
     }
     

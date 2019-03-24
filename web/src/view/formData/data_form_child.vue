@@ -16,27 +16,18 @@
         <!--查询条件表-->
         <p class="table-title">查询条件</p>
         <Row>
-          <Col span="6" v-for="item in searchDatas">
-            <span>{{item.tableColumnConfig.chineseName}}</span>
-            <Input v-model="item.tableColumnConfig.value"/>
+          <!--                    queryColumnName: value.tableColumnConfig.englishName,
+                    queryColumnType: value.queryType,
+                    queryValue: '',
+                    chineseName: value.tableColumnConfig.chineseName-->
+          <Col span="6" v-for="item in queryCondition" style="padding: 0 5px;">
+            <span>{{item.chineseName}}</span>
+            <Input v-if="typeof foreignKeyValues[item.queryColumnName] === 'undefined'" v-model="item.queryValue"/>
+            <Select v-if="typeof foreignKeyValues[item.queryColumnName] !== 'undefined'" v-model="item.queryValue">
+              <Option v-for="list in foreignKeyValues[item.queryColumnName]" :key="list.displayValue" :label="list.displayValue" :value="list.displayValue"></Option>
+            </Select>
           </Col>
-          <!--<Col span="2" class="line-30">-->
-            <!--名称:-->
-          <!--</Col>-->
-          <!--<Col span="6">-->
-            <!--<Select v-model="selectValue1" style="width:200px" @on-change="showDetail">-->
-              <!--<Option v-for="(item, index) in searchDatas" :key="index" :value="JSON.stringify(item.tableColumnConfig)">{{item.tableColumnConfig.chineseName}}</Option>-->
-            <!--</Select>-->
-          <!--</Col>-->
-          <!--<Col span="2" class="line-30">-->
-            <!--查询条件:-->
-          <!--</Col>-->
-          <!--<Col span="6">-->
-            <!--<Select v-model="selectValue2" style="width:200px" @on-change="showDetail">-->
-              <!--<Option v-for="item in searchDatas" :key="item.queryType" :value="item.queryType">{{conditionsObject[item.queryType]}}</Option>-->
-            <!--</Select>-->
-          <!--</Col>-->
-          <!--<span v-for="item in searchDatas">{{item.queryType}}</span>-->
+          <Button type="primary" style="position: absolute; right: 10px; top: 20px;" @click="showDetail">查询</Button>
         </Row>
         <!--<i-table :columns="searchColumns" :data="searchDatas"></i-table>-->
         <p class="table-title">表单数据展示</p>
@@ -237,7 +228,11 @@
           //  当前行数据详情
             rowDetail: {},
           //  当前页面页码
-            pageNumber: 1
+            pageNumber: 1,
+          //  查询条件集合
+            queryCondition: [],
+          //  外键下拉列表
+            foreignKeyValues: {}
           }
         },
       mounted () {
@@ -287,11 +282,7 @@
               "pageSize" : 10,    //每页数量
               "dto":{             //业务查询条件
                 "tableId" : this.treeId,   //表单主键ID，由菜单点击事件获得
-                "queryCondition":{
-                  "queryColumnName": sendObj.englishName,              //查询条件ID的，英文名，也就是数据库表字段
-                  "queryColumnType": this.selectValue2,       //CONDITION_ENUM_LIKE=包含关系,CONDITION_ENUM_EQUAL=等于,CONDITION_ENUM_MORE=大于,CONDITION_ENUM_LESS=小于,CONDITION_ENUM_BETWEEN=介于之间
-                  "queryValue": sendObj.chineseName
-                }
+                "queryCondition": this.queryCondition
               }
             }
             getFormData(obj).then((res) => {
@@ -315,75 +306,9 @@
             getListData().then((res) => {
               // console.log(res.data.data);
               this.tabsDatas = res.data.data;
-              this.getTableDatas(this.tabsDatas[0])
-              this.tableName = this.tabsDatas[0].chineseName
-              this.tabsDatas.forEach((value, index) => {
-                value.title = value.chineseName
-                value.render =  (h, { root, node, data }) => {
-                  return h('span', {
-                    style: {
-                      display: 'inline-block',
-                      width: '100%'
-                    },
-                  }, [
-                    h('span',{
-                        on: {
-                          click: (e) => {
-                            // console.log(document.getElementsByClassName('test'), 'sssssssss')
-                            // for (let key in document.getElementsByClassName('test')) {
-                            //   document.getElementsByClassName('test')[key].style.cssText="background-color: #fff;"
-                            // }
-                            var dom = document.getElementsByClassName('test');
-                            for(var i=0,len=dom.length; i<len; i++){
-                              dom[i].style.backgroundColor = '#fff';
-                            }
-                            // document.getElementsByClassName('test').style.background='#ffffff'
-                            setTimeout(() => {
-                              e.target.style.backgroundColor = "#f06"
-                            }, 200)
-                            // console.log(e, data, root, node, 'ppppppppppp')
-                            this.getTableDatas(data)
-                          }
-                        },
-                        style: {
-                          cursor: 'point'
-                        },
-                      class:['test']
-                    }, data.title),
-                  h('button',{
-                    style: {
-                      cursor: 'point',
-                      float: 'right',
-                      marginRight: '20px'
-                    }
-                  }, [
-                    h('span', {
-                      props: {
-                        icon: 'ios-add',
-                        // type: 'primary'
-                      },
-                      style: {
-                        width: '10px',
-                        cursor: 'point'
-                      },
-                      on: {
-                        click: () => { this.getNowTreeData(data.id) }
-                      }
-                    }, '+')
-                  ])])
-                }
-                // if (index === 0) {
-                //   value.selected = true
-                // }
-              })
+              this.getTableDatas(this.tabsDatas[0].id)
+              this.tableName = res.data.data.tableConfig.englishName
             })
-          },
-          onSelectChange (row) {
-            // console.log(row, 'ppppp')
-            if (row.length === 0) {
-              return
-            }
-            this.getTableDatas (row[0])
           },
           showIndex (id) {
             // console.log(id)
@@ -403,14 +328,12 @@
           },
           getNowTreeData(id) {
             getTableData(id).then((res) => {
-              this.nowTreeData = res.data.data.tableColumnConfigList
+              this.nowTreeData = res.data.data
               this.modal1 = true
             })
           },
           getTableDatas (id) {
-            // console.log(id, 'ppppppwww')
             this.treeId = id
-            // this.tableName = data.chineseName
             this.showDetail(this.pageNumber)
             getTableData(id).then((res) => {
               // console.log(res.data.data.tableConfig, 'ppppppptable')
@@ -418,21 +341,30 @@
               this.dataSetting = [res.data.data.tableConfig]
               // 获取所有搜索条件列表
               this.searchDatas = res.data.data.tableQueryConfigList
+              this.queryCondition = []
+              // 获取当前表格数据筛选条件的外键下拉选项列表
+              this.foreignKeyValues = res.data.data.foreignKeyValues
+              // 设置查询条件
+              console.log(this.searchDatas, 'dddddddd')
               this.searchDatas.forEach((value) => {
-                value.value = ''
+                this.queryCondition.push(
+                  {
+                    queryColumnName: value.tableColumnConfig.englishName,
+                    queryColumnType: value.queryType,
+                    queryValue: '',
+                    chineseName: value.tableColumnConfig.chineseName,
+                    colType: value.tableColumnConfig.colType
+                  }
+                )
               })
-              console.log(this.searchDatas, 'uuuuuuuuuuuuuuuuuuuu')
-              // this.selectValue1 = this.searchDatas[0].tableColumnConfig.chineseName
-              // this.selectValue2 = this.conditionsObject[this.searchDatas[0].queryType]
-              // console.log(this.selectValue2, 'ppppppppppp');
-              //  this.conditionsObject[params.row.queryType]
+              console.log(this.queryCondition, 'uuuuuuuu')
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
                 this.columnsDetail.push(
                   {
                     title: value.chineseName,
                     key: value.englishName,
-                    width: 150
+                    width: 200
                   }
                     )
               })
@@ -441,6 +373,7 @@
                 title: '操作',
                 key: 'action',
                 width: 100,
+                fixed: 'right',
                 align: 'center',
                 render: (h, params) => {
                   return h('Button', {
@@ -452,14 +385,6 @@
                   }, '查看')
                 }
               })
-              // this.modalDetails.forEach((value) => {
-              //   value.name = value.title
-              //   if (typeof value === 'object') {
-              //     value.value = this.rowDetail[value.key]
-              //   } else {
-              //     value.value = this.rowDetail[value.key]
-              //   }
-              // })
             })
           }
         },

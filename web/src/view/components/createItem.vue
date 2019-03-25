@@ -145,6 +145,7 @@ export default {
       this.loading = true
       this.$refs.formInline.validate((valid) => {
           if (valid) {
+            console.log(this.formItem)
               this.$emit('getVal',this.formItem)
           } else {
               this.loading = false

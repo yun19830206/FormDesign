@@ -66,18 +66,18 @@ export default {
   },
   methods: {
     computedVal(l,cg) {
-      if (cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME') {
+      if (cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME' && l[cg.tableColumnConfig.englishName]) {
         return new Date(l[cg.tableColumnConfig.englishName].replace(/-/g,'/').replace('T',' ')).format('yyyy-MM-dd hh:mm:ss')
       } else if (cg.tableColumnConfig.colType === 'COLUMN_FILE') {
         return ('<a href="' 
                 + this.baseUrl 
                 +'/aiassistant/file/get/file?fileId=' 
-                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].originValue || l[cg.tableColumnConfig.originValue]) : '') 
+                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue === undefined ? l[cg.tableColumnConfig.englishName] : l[cg.tableColumnConfig.englishName].displayValue) : '') 
                 + '">' 
-                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue || l[cg.tableColumnConfig.displayValue]) : '') 
+                +(l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue === undefined ? l[cg.tableColumnConfig.englishName] : l[cg.tableColumnConfig.englishName].displayValue) : '') 
                 +'</a>')
       } else {
-        return l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue || l[cg.tableColumnConfig.englishName]) : ''
+        return l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue === undefined ? l[cg.tableColumnConfig.englishName] : l[cg.tableColumnConfig.englishName].displayValue ) : ''
       }
     },
     onLoad (id) {

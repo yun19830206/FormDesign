@@ -36,7 +36,7 @@ export default {
     created () {
     },
     methods: {
-        sendVal () {
+        async sendVal () {
             if (this.info.empty === 0 && this.formItem.input.trim() === '') {
                 this.err = true
                 return false

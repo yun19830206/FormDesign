@@ -20,10 +20,10 @@
                     queryColumnType: value.queryType,
                     queryValue: '',
                     chineseName: value.tableColumnConfig.chineseName-->
-          <Col span="6" v-for="item in queryCondition" style="padding: 0 5px;">
+          <Col span="6" v-for="item in queryCondition" style="padding: 0 10px;">
             <span>{{item.chineseName}}</span>
-            <Input v-if="typeof foreignKeyValues[item.queryColumnName] === 'undefined'" v-model="item.queryValue"/>
-            <Select v-if="typeof foreignKeyValues[item.queryColumnName] !== 'undefined'" v-model="item.queryValue">
+            <Input v-if="foreignKeyValues ===null || typeof foreignKeyValues[item.queryColumnName] === 'undefined'" v-model="item.queryValue"/>
+            <Select v-if="foreignKeyValues !==null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'" v-model="item.queryValue">
               <Option v-for="list in foreignKeyValues[item.queryColumnName]" :key="list.displayValue" :label="list.displayValue" :value="list.displayValue"></Option>
             </Select>
           </Col>
@@ -84,7 +84,7 @@
             // 数据总数
             total: 0,
             // 新增传递的值
-            nowTreeData: [],
+            nowTreeData: null,
             modal1: false,
             // 名称下拉
             selectValue1: '',
@@ -239,6 +239,10 @@
           this.getTabsData()
       },
       methods: {
+        //  下载
+        downFile (id) {
+
+        },
         current (val) {
           // console.log(val)
           this.pageNumber = val
@@ -255,8 +259,8 @@
             })
           })
           let obj = {
-            'tableId' : this.treeId,                //[必填]表单主键ID，由当面所在表单查询页面维护
-            "tableName": this.tableName,   //[必填]表单配置的表名称
+            'tableId' : this.treeId, //[必填]表单主键ID，由当面所在表单查询页面维护
+            "tableName": this.nowTreeData.tableConfig.englishName, //[必填]表单配置的表名称
             "columnValueList": list
           }
           addData(obj).then((res) => {
@@ -264,7 +268,7 @@
           })
           setTimeout(() => {
             this.modal1 = false
-          },1000)
+          },100)
         },
           sureClose () {
             this.rowModal = false
@@ -307,13 +311,13 @@
               // console.log(res.data.data);
               this.tabsDatas = res.data.data;
               this.getTableDatas(this.tabsDatas[0].id)
-              this.tableName = res.data.data.tableConfig.englishName
+              this.tableName = this.tabsDatas[0].chineseName
             })
           },
           showIndex (id) {
             // console.log(id)
             let obj = {
-              "tableId" : this.treeId,              //[必填]表单主键ID，由当面所在表单查询页面维护
+              "tableId" : this.treeId, //[必填]表单主键ID，由当面所在表单查询页面维护
               "dataIdList":[id]
             }
             showDetail(obj).then((res) => {
@@ -329,6 +333,7 @@
           getNowTreeData(id) {
             getTableData(id).then((res) => {
               this.nowTreeData = res.data.data
+              console.log(this.nowTreeData, 'uuuuuuu')
               this.modal1 = true
             })
           },
@@ -360,13 +365,30 @@
               console.log(this.queryCondition, 'uuuuuuuu')
               this.columnsDetail = []
               res.data.data.tableColumnConfigList.forEach((value, index) => {
-                this.columnsDetail.push(
-                  {
-                    title: value.chineseName,
-                    key: value.englishName,
-                    width: 200
-                  }
-                    )
+                if (value.colType === 'COLUMN_FILE') {
+                  this.columnsDetail.push(
+                    {
+                      title: value.chineseName,
+                      key: value.englishName,
+                      width: 200,
+                      render: (h, params) => {
+                        return h('a', {
+                          attrs: {
+                            href: this.baseUrl + 'fileId=' + params.row.id
+                          }
+                        }, params.row.file_id)
+                      }
+                    }
+                  )
+                } else {
+                  this.columnsDetail.push(
+                    {
+                      title: value.chineseName,
+                      key: value.englishName,
+                      width: 200
+                    }
+                  )
+                }
               })
               this.modalDetails = [...this.columnsDetail]
               this.columnsDetail.push({

@@ -1,6 +1,6 @@
 <template>
     <FormItem :label="info.chineseName">
-        <Select @on-change="valChange" :value="info.defaultValue">
+        <Select v-model="formItem[info.englishName]">
             <Option v-for="i in selectVal" :key="i.id" :value="i.id">{{i.displayValue}}</Option>
         </Select>
     </FormItem>
@@ -13,6 +13,9 @@ export default {
         },
         foreignKeyValues: {
             type:Object 
+        },
+        formItem: {
+            type:Object
         }
     },
     computed: {
@@ -21,12 +24,6 @@ export default {
         }
     },
     methods: {
-        valChange(val){
-            this.$emit('valing',{prop:this.info.englishName,val})
-        },
-        resetFields() {
-            this.$emit('valing',{prop:this.info.englishName,val:''})
-        }
     }
     
 }

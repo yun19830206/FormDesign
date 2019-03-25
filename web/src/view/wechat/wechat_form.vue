@@ -31,6 +31,7 @@ export default {
   },
   created () {
     localStorage.setItem('login','login')
+    document.title = '云问CRM助手-我的表单'
     this.onLoad()
   },
   methods: {

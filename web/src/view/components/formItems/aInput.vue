@@ -1,6 +1,6 @@
 <template>
     <FormItem  :prop="info.englishName" :label="info.chineseName">
-        <Input v-model="formItem.input" :placeholder="'请输入'+ info.chineseName"></Input>
+        <Input v-model="formItem[info.englishName]" :placeholder="'请输入'+ info.chineseName" />
     </FormItem>
 </template>
 <script>
@@ -9,25 +9,10 @@ export default {
         info: {
             type:Object
         },
-        form_validate: {
+        formItem: {
             type:Object
         }
-    },
-    data () {
-       return  {
-            formItem: {
-                input:''
-            }
-        }
-    },
-    methods: {
-        sendVal () {
-            return {
-                [this.info.englishName]:this.formItem.input
-            }
-        }
-    }
-    
+    } 
 }
 </script>
 <style scoped>

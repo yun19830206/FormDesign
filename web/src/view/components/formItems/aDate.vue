@@ -2,7 +2,7 @@
     <FormItem :prop="info.englishName" :label="info.chineseName">
         <Row>
             <Col span="24">
-                <DatePicker type="date" placeholder="请选择日期" v-model="formItem.date"></DatePicker>
+                <DatePicker type="date" placeholder="请选择日期" v-model="formItem[info.englishName]"></DatePicker>
             </Col>
         </Row>
     </FormItem>
@@ -12,20 +12,9 @@ export default {
     props: {
         info: {
             type:Object
-        }
-    },
-    data () {
-        return  {
-            formItem: {
-                date:''
-            }
-        }
-    },
-    methods: {
-        sendVal () {
-            return {
-                [this.info.englishName]:this.formItem.date
-            }
+        },
+        formItem: {
+            type:Object
         }
     }
     

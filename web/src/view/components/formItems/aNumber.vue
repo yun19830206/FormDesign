@@ -1,6 +1,6 @@
 <template>
-    <FormItem :prop="info.englishName" :label="info.chineseName">
-        <Input v-model="formItem.input" :placeholder="'请输入'+ info.chineseName"></Input>
+    <FormItem  :prop="info.englishName" :label="info.chineseName">
+        <Input v-model="formItem[info.englishName]" :placeholder="'请输入'+ info.chineseName" />
     </FormItem>
 </template>
 <script>
@@ -8,20 +8,9 @@ export default {
     props: {
         info: {
             type:Object
-        }
-    },
-   data () {
-       return  {
-            formItem: {
-                input:''
-            }
-        }
-    },
-    methods: {
-        sendVal () {
-            return {
-                [this.info.englishName]:this.formItem.input
-            }
+        },
+        formItem: {
+            type:Object
         }
     }
     

@@ -4,9 +4,19 @@
     title="新增数据"
     :loading="loading"
     @on-ok="ok"
+    @on-visible-change="statusChange"
     @on-cancel="cancel">
     <Form ref="formInline" :rules="ruleInline" :model="formItem" :label-width="80">
-      <div ref="item" :form_validate="ruleInline" v-for="item in tableColumnConfigList" :key="item.id + '-' + item.tableId" :is="componentName[item.colType]" :info="item"></div>
+      <div 
+      ref="item" 
+      :form_validate="ruleInline"
+      v-for="item in tableColumnConfigList.tableColumnConfigList"
+      :foreignKeyValues="tableColumnConfigList.foreignKeyValues"
+      :key="item.id + '-' + item.tableId" 
+      :formItem="formItem"
+      :is="componentName[item.colType]" 
+      :info="item"
+      ></div>
     </Form>
   </Modal>
 </template>
@@ -21,13 +31,15 @@ import aNumber from "./formItems/aNumber.vue"
 import aPhone from "./formItems/aPhone.vue"
 import aRich from "./formItems/aRich.vue"
 import aSelect from "./formItems/aSelect.vue"
+import  { uniquedData } from '@/api/data'
+
 export default {
   props: {
     showModal: {
       type: Boolean
     },
     tableColumnConfigList: {
-      type: Array
+      type: Object
     }
   },
   components: {
@@ -45,10 +57,8 @@ export default {
   data () {
     return {
       loading:true,
-      formItem: {
-        input: '',
-        select: ''
-      },
+      formItem: {},
+      form:{},
       componentName: {
         'COLUMN_SIGN_LINE_TEXT':'a-input',
         'COLUMN_DROP_BOX':'a-select',
@@ -63,6 +73,10 @@ export default {
       }
     }
   },
+  created() {
+    this.resetForm()
+    console.log(this.tableColumnConfigList)
+  },
   computed: {
     show : {
       get () {
@@ -73,25 +87,65 @@ export default {
       }
     },
     ruleInline () {
-      return this.tableColumnConfigList.reduce((res, item) => {
+      return this.tableColumnConfigList.tableColumnConfigList.reduce((res, item) => {
         if (item.empty === 0 ){
-          res[item.englishName] = [{ required: true, message: '请输入' + item.chineseName, trigger: 'blur' }]
+          res[item.englishName] = [{ required: true, message: '请输入' + item.chineseName, trigger:'blur' }]
+        }
+        if (item.uniqued === 1 ){
+          res[item.englishName].push({
+            validator: this.validateuniqued,
+            trigger: 'blur'
+          })
         }
         return res
       },{})
     }
   },
   methods: {
+    /**
+     * 表单唯一性异步校验
+     */
+    async validateuniqued (rule, value, callback) {
+      let data = {
+        "tableId" : this.tableColumnConfigList.tableConfig.id,                //[必填]表单主键ID，由当面所在表单查询页面维护
+        "tableName": this.tableColumnConfigList.tableConfig.englishName,   //[必填]表单配置的表名称
+        "columnName": rule.field,       //[必填]判断重复的字段名
+        "columnValue": value
+      }
+      let res = await uniquedData(data)
+      if (res.data.code === 500){
+        return callback(new Error(res.data.message))
+      }
+      return callback()
+    },
+    /**
+     * 手动重置表单
+     */
+    resetForm () {
+      this.tableColumnConfigList.tableColumnConfigList.map(item => {
+        this.$set(this.formItem,item.englishName,item.defaultValue || '')
+      })
+    },
+    /**
+     * 模态框显示时重置表单
+     */
+    statusChange (val) {
+      if(val){
+        this.$nextTick(_ => {
+          this.$refs.formInline.resetFields()
+          this.formItem = {}
+          this.resetForm()
+        }) 
+      }
+    },
+    /**
+     * 数据提交
+     */
     ok () {
       this.loading = true
       this.$refs.formInline.validate((valid) => {
           if (valid) {
-            cosole.log('346547')
-              let data = {}
-              this.$refs.item.map( i => {
-                Object.assign(data,i.sendVal())
-              })
-              this.$emit('getVal',data)
+              this.$emit('getVal',this.formItem)
           } else {
               this.loading = false
           }
@@ -103,9 +157,6 @@ export default {
     cancel () {
       this.$emit('close')
     }
-  },
-  created () {
-    console.log(this.ruleInline)
   }
 }
 </script>

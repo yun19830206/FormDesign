@@ -1,11 +1,17 @@
 <template>
-  <div>
+  <div class="add-wrapper">
     <van-cell-group>
-      <div ref="item" v-for="item in tableColumnConfigList" :key="item.id + '-' + item.tableId" :is="componentName[item.colType]" :info="item"></div>
+      <div ref="item" 
+      v-for="item in tableColumnConfigList" 
+      :key="item.id + '-' + item.tableId" 
+      :is="componentName[item.colType]" 
+      :info="item"
+      :tableConfig="tableConfig"
+      :foreignKeyValues="foreignKeyValues"></div>
     </van-cell-group>
     <!-- <van-cell-group> -->
-      <p style="padding:0 20px;margin-top:20px;">
-        <van-button size="large" @click="submitInfo" type="info">提交</van-button>
+      <p style="padding:0 20px;margin:20px 0;">
+        <van-button size="large" :loading="loading" @click="submitInfo" type="info">提交</van-button>
       </p>
       
     <!-- </van-cell-group> -->
@@ -29,7 +35,9 @@ export default {
   data () {
     return {
       id:'',
+      loading:false,
       tableColumnConfigList:[],
+      tableConfig:{},
       componentName: {
         'COLUMN_SIGN_LINE_TEXT':'wx-input',
         'COLUMN_DROP_BOX':'wx-select',
@@ -37,8 +45,8 @@ export default {
         'COLUMN_MANY_LINE_TEXT':'wx-area',
         'COLUMN_DATE_TIME':'wx-date',
         'COLUMN_NUMBER':'wx-number',
-        'COLUMN_PHONE_NUMBER':'wx-phone',
-        'COLUMN_EMAIL':'wx-mail',
+        'COLUMN_PHONE_NUMBER':'wx-number',
+        'COLUMN_EMAIL':'wx-input',
         'COLUMN_FILE':'wx-file',
         'COLUMN_FOREIGN_KEY':'wx-key'
       }
@@ -58,6 +66,7 @@ export default {
   },
   created () {
     localStorage.setItem('login','login')
+    document.title = '云问CRM助手-新增数据'
     this.id = this.$route.params.id
     this.onLoad(this.id)
   },
@@ -66,34 +75,68 @@ export default {
         getFormConfigData(id).then( res => {
           if (res.data.code === 200) {
             this.tableColumnConfigList = res.data.data.tableColumnConfigList
+            this.foreignKeyValues = res.data.data.foreignKeyValues
             this.tableName = res.data.data.tableConfig.englishName
+            this.tableConfig = res.data.data.tableConfig
           }else{
             
           }
         }).catch(_ => this.loading = false)
     },
-    submitInfo (pg) {
+    async submitInfo (pg) {
+      this.loading = true
       let data = []
-      this.$refs.item.map( i => {
-        let d = i.sendVal()
-        data.push({
-          "columnName": Object.keys(d)[0],  
-          "columnValue":Object.values(d)[0]
+      let validate = true
+      let promiseArr = []
+      this.$refs.item.map( i =>  {
+        let p = new Promise((resolve, reject) => {
+          i.sendVal().then ( d => {
+            if(d){
+              let val = Object.values(d)[0].trim()
+              if(val){
+                data.push({
+                  "columnName": Object.keys(d)[0],  
+                  "columnValue":Object.values(d)[0]
+                })
+              }
+            }else{
+              validate = false
+            }
+            resolve()
+          })
         })
+        promiseArr.push(p)
       })
-
-      let params = {
-        "tableId" : this.id,                //[必填]表单主键ID，由当面所在表单查询页面维护
-        "tableName": this.tableName,   //[必填]表单配置的表名称
-        "columnValueList": data
-      }
-
-      addData (params).then(res => {
-        if(res.data.code === 200){
-          this.$router.push('/wechat_form/')
+      await Promise.all(promiseArr)
+      if(validate){
+        let params = {
+          "tableId" : this.id,                //[必填]表单主键ID，由当面所在表单查询页面维护
+          "tableName": this.tableName,   //[必填]表单配置的表名称
+          "columnValueList": data
         }
-      })
-      
+
+        let res = await addData (params)
+        this.loading  = false
+        if(res.data.code === 200){
+          this.$notify({
+            message:res.data.message,
+            duration: 1000,
+            background: '#07c160'
+          })
+          setTimeout(() => {
+            this.$router.push('/wechat_form/')
+          }, 600)
+          
+        }else{
+          this.$notify({
+            message:res.data.message,
+            duration: 1000,
+            background: '#f44'
+          })
+        }
+      }else{
+        this.loading = false
+      }
     },
     showInfo (item) {
       this.activeItem = item
@@ -108,6 +151,10 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
+}
+.add-wrapper{
+  height: 100%;
+  overflow: auto;
 }
 </style>
 

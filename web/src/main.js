@@ -20,6 +20,8 @@ import Vant from 'vant';
 // import { XTable } from 'vux'
 import 'vant/lib/index.css';
 
+Vue.prototype.baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+
 
 Vue.use(Vant);
 // 实际打包时应该不引入mock

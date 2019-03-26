@@ -92,11 +92,11 @@ export default {
         let p = new Promise((resolve, reject) => {
           i.sendVal().then ( d => {
             if(d){
-              let val = Object.values(d)[0].trim()
+              let val = typeof Object.values(d)[0] === 'string' ? Object.values(d)[0].trim() : Object.values(d)[0]
               if(val){
                 data.push({
                   "columnName": Object.keys(d)[0],  
-                  "columnValue":Object.values(d)[0]
+                  "columnValue":val
                 })
               }
             }else{

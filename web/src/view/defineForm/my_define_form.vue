@@ -16,7 +16,7 @@
     :tableDisplayConfigListColumns="tableDisplayConfigListColumns"
     @close="modelShow = false" />
 
-    <createItem :showModal="mo" :tableColumnConfigList="data"  @close="mo = false"  />
+    <!-- <createItem :showModal="mo" :tableColumnConfigList="data"  @close="mo = false"  /> -->
     
   </div>
 </template>

@@ -115,28 +115,38 @@ export default {
           "columnValueList": data
         }
 
-        let res = await addData (params)
-        this.loading  = false
-        if(res.data.code === 200){
+        try {
+          let res = await addData (params)
+          this.loading  = false
+          if(res.data.code === 200){
+            this.$notify({
+              message:res.data.message,
+              duration: 1000,
+              background: '#07c160'
+            })
+            setTimeout(() => {
+              this.$router.push('/wechat_form/')
+            }, 600)
+            
+          }else{
+            this.$notify({
+              message:res.data.message,
+              duration: 1000,
+              background: '#f44'
+            })
+          }
+        } catch (error) {
           this.$notify({
-            message:res.data.message,
-            duration: 1000,
-            background: '#07c160'
-          })
-          setTimeout(() => {
-            this.$router.push('/wechat_form/')
-          }, 600)
-          
-        }else{
-          this.$notify({
-            message:res.data.message,
+            message:'请求出错',
             duration: 1000,
             background: '#f44'
           })
+          this.loading = false
         }
-      }else{
-        this.loading = false
+
+        
       }
+      this.loading = false
     },
     showInfo (item) {
       this.activeItem = item

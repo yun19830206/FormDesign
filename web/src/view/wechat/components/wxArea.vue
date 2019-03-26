@@ -1,9 +1,12 @@
 <template> 
     <van-field 
     v-model="formItem.input" 
-    input-align="right" 
+    input-align="left" 
     :label="info.chineseName" 
     :error="err"
+    rows="2"
+    autosize
+    type="textarea"
     @focus="err = false"
     :placeholder="'请输入' + info.chineseName" />
 </template>

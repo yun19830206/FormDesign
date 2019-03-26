@@ -87,7 +87,7 @@ export default {
       }
     },
     ruleInline () {
-      return this.tableColumnConfigList.tableColumnConfigList.reduce((res, item) => {
+      return this.tableColumnConfigList.tableColumnConfigList ? this.tableColumnConfigList.tableColumnConfigList.reduce((res, item) => {
         if (item.empty === 0 ){
           res[item.englishName] = [{ required: true, message: '请输入' + item.chineseName, trigger:'blur' }]
         }
@@ -98,7 +98,7 @@ export default {
           })
         }
         return res
-      },{})
+      },{}) : {}
     }
   },
   methods: {
@@ -122,9 +122,9 @@ export default {
      * 手动重置表单
      */
     resetForm () {
-      this.tableColumnConfigList.tableColumnConfigList.map(item => {
+      this.tableColumnConfigList.tableColumnConfigList ? this.tableColumnConfigList.tableColumnConfigList.map(item => {
         this.$set(this.formItem,item.englishName,item.defaultValue || '')
-      })
+      }) : []
     },
     /**
      * 模态框显示时重置表单

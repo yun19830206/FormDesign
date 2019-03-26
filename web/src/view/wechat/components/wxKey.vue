@@ -9,7 +9,7 @@
         <van-popup position="bottom" v-model="showSelect">
             <van-picker
             :defaultIndex="defaultIndex" 
-            show-toolbar 
+            show-toolbar
             :title="info.chineseName" 
             @cancel="onCancel" 
             @confirm="onConfirm"  
@@ -70,12 +70,12 @@ export default {
                     return false
                 }else{
                     return {
-                        [this.info.englishName]:this.formItem.input
+                        [this.info.englishName]:this.foreignKeyValues[this.info.englishName].find( item => item.displayValue === this.formItem.input).id
                     }
                 }
             }
             return {
-                [this.info.englishName]:this.formItem.input
+                [this.info.englishName]:this.foreignKeyValues[this.info.englishName].find( item => item.displayValue === this.formItem.input).id
             }
         },
         onCancel () {

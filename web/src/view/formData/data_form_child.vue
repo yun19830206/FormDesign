@@ -3,8 +3,8 @@
     <Row class="body-area">
       <Col span="5" class="leftArea">
         <!--<Tree :data="tabsDatas" @on-select-change="onSelectChange"></Tree>-->
-        <div v-for="item in tabsDatas" style="padding-left: 10px;padding-top: 15px;">
-          <Button style="width: 150px;" @click="getTableDatas(item.id)">{{item.chineseName}}</Button>
+        <div v-for="(item,index) in tabsDatas" style="padding-left: 10px;padding-top: 15px;">
+          <Button :type="active === index ? 'primary' : ''" style="width: 150px;" @click="getTableDatas(item.id,index)">{{item.chineseName}}</Button>
           <span>  </span>
           <Button @click="getNowTreeData(item.id)"><Icon type="md-add" /></Button>
         </div>
@@ -22,6 +22,7 @@
                     chineseName: value.tableColumnConfig.chineseName-->
           <Col span="6" v-for="item in queryCondition" style="padding: 0 10px;">
             <span>{{item.chineseName}}</span>
+
             <Input v-if="foreignKeyValues ===null || typeof foreignKeyValues[item.queryColumnName] === 'undefined'" v-model="item.queryValue"/>
             <Select v-if="foreignKeyValues !==null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'" v-model="item.queryValue">
               <Option v-for="list in foreignKeyValues[item.queryColumnName]" :key="list.displayValue" :label="list.displayValue" :value="list.displayValue"></Option>
@@ -46,8 +47,8 @@
         <!--</Row>-->
         <table class="ivu-table table" style="width: 400px;text-align: center;">
           <tr class="ivu-table-row" v-for="item in columnsDetail" :key="item.id">
-            <td>{{item.key === 'action' ? '' : item.title}}</td>
-            <td>{{rowDetail[item.key] | isObj}}</td>
+            <td style="width: 150px;">{{item.key === 'action' ? '' : item.title}}</td>
+            <td><a :href="baseUrl + 'aiassistant/file/get/file?fileId=' + rowDetail.id" v-if="item.key === 'file_id'">{{rowDetail[item.key] | isObj}}</a><span v-else>{{rowDetail[item.key] | isObj}}</span></td>
           </tr>
         </table>
     </Modal>
@@ -68,6 +69,7 @@
         components: {createItem},
         data () {
           return {
+            active:null,
             modalColum: [
               {
                 title: '名称',
@@ -84,7 +86,7 @@
             // 数据总数
             total: 0,
             // 新增传递的值
-            nowTreeData: null,
+            nowTreeData: {},
             modal1: false,
             // 名称下拉
             selectValue1: '',
@@ -237,6 +239,7 @@
         },
       mounted () {
           this.getTabsData()
+          
       },
       methods: {
         //  下载
@@ -309,9 +312,10 @@
           getTabsData () {
             getListData().then((res) => {
               // console.log(res.data.data);
-              this.tabsDatas = res.data.data;
+              this.tabsDatas = res.data.data.sort((a,b) => a.id-b.id);
               this.getTableDatas(this.tabsDatas[0].id)
               this.tableName = this.tabsDatas[0].chineseName
+              this.active = 0
             })
           },
           showIndex (id) {
@@ -337,7 +341,8 @@
               this.modal1 = true
             })
           },
-          getTableDatas (id) {
+          getTableDatas (id,index) {
+            this.active = index
             this.treeId = id
             this.showDetail(this.pageNumber)
             getTableData(id).then((res) => {
@@ -349,9 +354,21 @@
               this.queryCondition = []
               // 获取当前表格数据筛选条件的外键下拉选项列表
               this.foreignKeyValues = res.data.data.foreignKeyValues
+              if (this.foreignKeyValues === null) {
+                this.foreignKeyValues = {}
+              }
               // 设置查询条件
               console.log(this.searchDatas, 'dddddddd')
               this.searchDatas.forEach((value) => {
+                if (value.tableColumnConfig.dropValue !== null) {
+                  let arr = []
+                  value.tableColumnConfig.dropValue.split(',').forEach((v) => {
+                    arr.push({displayValue: v})
+                  })
+                  let key = value.tableColumnConfig.englishName
+                  this.foreignKeyValues[value.tableColumnConfig.englishName] = arr
+                }
+                console.log(this.foreignKeyValues, 'yyyyyyyyyyyyyyyyyyyy')
                 this.queryCondition.push(
                   {
                     queryColumnName: value.tableColumnConfig.englishName,
@@ -374,7 +391,7 @@
                       render: (h, params) => {
                         return h('a', {
                           attrs: {
-                            href: this.baseUrl + 'fileId=' + params.row.id
+                            href: this.baseUrl + 'aiassistant/file/get/file?fileId=' + params.row.id
                           }
                         }, params.row.file_id)
                       }

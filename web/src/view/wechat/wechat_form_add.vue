@@ -1,54 +1,56 @@
 <template>
   <div class="add-wrapper">
     <van-cell-group>
-      <div ref="item" 
-      v-for="item in tableColumnConfigList" 
-      :key="item.id + '-' + item.tableId" 
-      :is="componentName[item.colType]" 
-      :info="item"
-      :tableConfig="tableConfig"
-      :foreignKeyValues="foreignKeyValues"></div>
+      <div ref="item"
+           v-for="item in tableColumnConfigList"
+           :key="item.id + '-' + item.tableId"
+           :is="componentName[item.colType]"
+           :info="item"
+           :tableConfig="tableConfig"
+           :foreignKeyValues="foreignKeyValues"></div>
     </van-cell-group>
     <!-- <van-cell-group> -->
-      <p style="padding:0 20px;margin:20px 0;">
-        <van-button size="large" :loading="loading" @click="submitInfo" type="info">提交</van-button>
-      </p>
-      
+    <p style="padding:0 20px;margin:20px 0;">
+      <van-button size="large"
+                  :loading="loading"
+                  @click="submitInfo"
+                  type="info">提交</van-button>
+    </p>
+
     <!-- </van-cell-group> -->
   </div>
 
-
 </template>
 <script>
-import { getFormConfigData,addData } from '@/api/data'
-import wxInput from "./components/wxInput.vue"
-import wxArea from "./components/wxArea.vue"
-import wxDate from "./components/wxDate.vue"
-import wxFile from "./components/wxFile.vue"
-import wxKey from "./components/wxKey.vue"
-import wxMail from "./components/wxMail.vue"
-import wxNumber from "./components/wxNumber.vue"
-import wxPhone from "./components/wxPhone.vue"
-import wxRich from "./components/wxRich.vue"
-import wxSelect from "./components/wxSelect.vue"
+import { getFormConfigData, addData } from '@/api/data'
+import wxInput from './components/wxInput.vue'
+import wxArea from './components/wxArea.vue'
+import wxDate from './components/wxDate.vue'
+import wxFile from './components/wxFile.vue'
+import wxKey from './components/wxKey.vue'
+import wxMail from './components/wxMail.vue'
+import wxNumber from './components/wxNumber.vue'
+import wxPhone from './components/wxPhone.vue'
+import wxRich from './components/wxRich.vue'
+import wxSelect from './components/wxSelect.vue'
 export default {
   data () {
     return {
-      id:'',
-      loading:false,
-      tableColumnConfigList:[],
-      tableConfig:{},
+      id: '',
+      loading: false,
+      tableColumnConfigList: [],
+      tableConfig: {},
       componentName: {
-        'COLUMN_SIGN_LINE_TEXT':'wx-input',
-        'COLUMN_DROP_BOX':'wx-select',
-        'COLUMN_RICH_TEXT':'wx-rich',
-        'COLUMN_MANY_LINE_TEXT':'wx-area',
-        'COLUMN_DATE_TIME':'wx-date',
-        'COLUMN_NUMBER':'wx-number',
-        'COLUMN_PHONE_NUMBER':'wx-number',
-        'COLUMN_EMAIL':'wx-input',
-        'COLUMN_FILE':'wx-file',
-        'COLUMN_FOREIGN_KEY':'wx-key'
+        'COLUMN_SIGN_LINE_TEXT': 'wx-input',
+        'COLUMN_DROP_BOX': 'wx-select',
+        'COLUMN_RICH_TEXT': 'wx-rich',
+        'COLUMN_MANY_LINE_TEXT': 'wx-area',
+        'COLUMN_DATE_TIME': 'wx-date',
+        'COLUMN_NUMBER': 'wx-number',
+        'COLUMN_PHONE_NUMBER': 'wx-number',
+        'COLUMN_EMAIL': 'wx-input',
+        'COLUMN_FILE': 'wx-file',
+        'COLUMN_FOREIGN_KEY': 'wx-key'
       }
     }
   },
@@ -65,41 +67,41 @@ export default {
     wxSelect
   },
   created () {
-    localStorage.setItem('login','login')
+    localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-新增数据'
     this.id = this.$route.params.id
     this.onLoad(this.id)
   },
   methods: {
     onLoad (id) {
-        getFormConfigData(id).then( res => {
-          if (res.data.code === 200) {
-            this.tableColumnConfigList = res.data.data.tableColumnConfigList
-            this.foreignKeyValues = res.data.data.foreignKeyValues
-            this.tableName = res.data.data.tableConfig.englishName
-            this.tableConfig = res.data.data.tableConfig
-          }else{
-            
-          }
-        }).catch(_ => this.loading = false)
+      getFormConfigData(id).then(res => {
+        if (res.data.code === 200) {
+          this.tableColumnConfigList = res.data.data.tableColumnConfigList
+          this.foreignKeyValues = res.data.data.foreignKeyValues
+          this.tableName = res.data.data.tableConfig.englishName
+          this.tableConfig = res.data.data.tableConfig
+        } else {
+
+        }
+      }).catch(_ => (this.loading = false))
     },
     async submitInfo (pg) {
       this.loading = true
       let data = []
       let validate = true
       let promiseArr = []
-      this.$refs.item.map( i =>  {
+      this.$refs.item.map(i => {
         let p = new Promise((resolve, reject) => {
-          i.sendVal().then ( d => {
-            if(d){
+          i.sendVal().then(d => {
+            if (d) {
               let val = typeof Object.values(d)[0] === 'string' ? Object.values(d)[0].trim() : Object.values(d)[0]
-              if(val){
+              if (val) {
                 data.push({
-                  "columnName": Object.keys(d)[0],  
-                  "columnValue":val
+                  'columnName': Object.keys(d)[0],
+                  'columnValue': val
                 })
               }
-            }else{
+            } else {
               validate = false
             }
             resolve()
@@ -108,43 +110,40 @@ export default {
         promiseArr.push(p)
       })
       await Promise.all(promiseArr)
-      if(validate){
+      if (validate) {
         let params = {
-          "tableId" : this.id,                //[必填]表单主键ID，由当面所在表单查询页面维护
-          "tableName": this.tableName,   //[必填]表单配置的表名称
-          "columnValueList": data
+          'tableId': this.id, // [必填]表单主键ID，由当面所在表单查询页面维护
+          'tableName': this.tableName, // [必填]表单配置的表名称
+          'columnValueList': data
         }
 
         try {
-          let res = await addData (params)
-          this.loading  = false
-          if(res.data.code === 200){
+          let res = await addData(params)
+          this.loading = false
+          if (res.data.code === 200) {
             this.$notify({
-              message:res.data.message,
+              message: res.data.message,
               duration: 1000,
               background: '#07c160'
             })
             setTimeout(() => {
               this.$router.push('/wechat_form/')
             }, 600)
-            
-          }else{
+          } else {
             this.$notify({
-              message:res.data.message,
+              message: res.data.message,
               duration: 1000,
               background: '#f44'
             })
           }
         } catch (error) {
           this.$notify({
-            message:'请求出错',
+            message: '请求出错',
             duration: 1000,
             background: '#f44'
           })
           this.loading = false
         }
-
-        
       }
       this.loading = false
     },
@@ -152,20 +151,18 @@ export default {
       this.activeItem = item
       this.show = true
     }
-  
+
   }
 }
 </script>
 <style scoped>
-.flex{
+.flex {
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
 }
-.add-wrapper{
+.add-wrapper {
   height: 100%;
   overflow: auto;
 }
 </style>
-
-

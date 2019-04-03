@@ -16,14 +16,16 @@ import '@/assets/icons/iconfont.css'
 import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
-import Vant from 'vant';
+import Vant from 'vant'
 // import { XTable } from 'vux'
-import 'vant/lib/index.css';
+import 'vant/lib/index.css'
 
-Vue.prototype.baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+Vue.prototype.baseUrl =
+  process.env.NODE_ENV === 'development'
+    ? config.baseUrl.dev
+    : config.baseUrl.pro
 
-
-Vue.use(Vant);
+Vue.use(Vant)
 // 实际打包时应该不引入mock
 /* eslint-disable */
 // if (process.env.NODE_ENV !== 'production') require('@/mock')
@@ -50,7 +52,6 @@ Vue.prototype.$config = config
  */
 Vue.prototype.wx = wx
 
-
 // Vue.component('x-table', XTable)
 
 /**
@@ -59,28 +60,33 @@ Vue.prototype.wx = wx
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
 
-
 /**
  * 序列化时间对象
- * @param {Date} fmt 
+ * @param {Date} fmt
  */
-Date.prototype.format = function(fmt)   
-{ //author: meizz   
-  var o = {   
-    "M+" : this.getMonth()+1,                 //月份   
-    "d+" : this.getDate(),                    //日   
-    "h+" : this.getHours(),                   //小时   
-    "m+" : this.getMinutes(),                 //分   
-    "s+" : this.getSeconds(),                 //秒   
-    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
-    "S"  : this.getMilliseconds()             //毫秒   
-  };   
-  if(/(y+)/.test(fmt))   
-    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
-  for(var k in o)   
-    if(new RegExp("("+ k +")").test(fmt))   
-  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
-  return fmt;   
+Date.prototype.format = function(fmt) {
+  //author: meizz
+  var o = {
+    'M+': this.getMonth() + 1, //月份
+    'd+': this.getDate(), //日
+    'h+': this.getHours(), //小时
+    'm+': this.getMinutes(), //分
+    's+': this.getSeconds(), //秒
+    'q+': Math.floor((this.getMonth() + 3) / 3), //季度
+    S: this.getMilliseconds() //毫秒
+  }
+  if (/(y+)/.test(fmt))
+    fmt = fmt.replace(
+      RegExp.$1,
+      (this.getFullYear() + '').substr(4 - RegExp.$1.length)
+    )
+  for (var k in o)
+    if (new RegExp('(' + k + ')').test(fmt))
+      fmt = fmt.replace(
+        RegExp.$1,
+        RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
+      )
+  return fmt
 }
 
 /* eslint-disable no-new */

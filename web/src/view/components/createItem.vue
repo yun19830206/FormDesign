@@ -97,6 +97,7 @@ export default {
             trigger: 'blur'
           })
         }
+        console.log('yun',res,'')
         return res
       },{}) : {}
     }

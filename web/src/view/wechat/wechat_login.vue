@@ -1,32 +1,33 @@
 <template>
-    <div class="wrapper">
-        <div class="logo-wrapper">
-          <img src="../../assets/logoNew.png" alt="">
-        </div>
-        <van-cell-group class="inner">
-          <van-field
-            v-model="username"
-            required
-            clearable
-            label="账户"
-            @focus="usernameError = false"
-            placeholder="请输入账户"
-            :error="usernameError"
-          />
-
-          <van-field
-            v-model="password"
-            type="password"
-            @focus="passwordError = false"
-            label="密码"
-            placeholder="请输入密码"
-            :error="passwordError"
-            required
-          />
-
-          <van-button @click="submitCount" :loading="isSubmit" class="btn" type="info" size="large">绑定</van-button>
-        </van-cell-group>
+  <div class="wrapper">
+    <div class="logo-wrapper">
+      <img src="../../assets/logoNew.png"
+           alt="">
     </div>
+    <van-cell-group class="inner">
+      <van-field v-model="username"
+                 required
+                 clearable
+                 label="账户"
+                 @focus="usernameError = false"
+                 placeholder="请输入账户"
+                 :error="usernameError" />
+
+      <van-field v-model="password"
+                 type="password"
+                 @focus="passwordError = false"
+                 label="密码"
+                 placeholder="请输入密码"
+                 :error="passwordError"
+                 required />
+
+      <van-button @click="submitCount"
+                  :loading="isSubmit"
+                  class="btn"
+                  type="info"
+                  size="large">绑定</van-button>
+    </van-cell-group>
+  </div>
 </template>
 <script>
 import { login } from '@/api/wechat'
@@ -36,23 +37,23 @@ export default {
       isSubmit: false,
       usernameError: false,
       passwordError: false,
-      username:'',
-      password:''
+      username: '',
+      password: ''
     }
   },
   created () {
-    localStorage.setItem('login','login')
+    localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-绑定'
   },
   methods: {
     submitCount () {
       if (this.username === '') {
         this.usernameError = true
-        return 
+        return
       }
       if (this.password === '') {
         this.passwordError = true
-        return 
+        return
       }
       let data = {
         userName: this.username,
@@ -60,13 +61,13 @@ export default {
         wxCode: this.getQueryString('code')
       }
       this.isSubmit = true
-      login(data).then( res => {
+      login(data).then(res => {
         if (res.data.code === 200) {
           this.$toast.success('绑定成功！')
           setTimeout(() => {
             this.wx.closeWindow()
-          }, 600);
-        }else{
+          }, 600)
+        } else {
           this.$toast.fail('提交失败！')
         }
         this.isSubmit = false
@@ -76,18 +77,18 @@ export default {
       })
     },
     getQueryString (name) {
-        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
-        var r = window.location.search.substr(1).match(reg)
-        if (r != null) {
-            return unescape(r[2]);
-        }
-        return null;
+      var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+      var r = window.location.search.substr(1).match(reg)
+      if (r != null) {
+        return unescape(r[2])
+      }
+      return null
     }
   }
 }
 </script>
 <style scoped>
-.wrapper{
+.wrapper {
   display: flex;
   height: 100%;
   width: 90%;
@@ -102,12 +103,10 @@ export default {
 .btn {
   margin-top: 20px;
 }
-.logo-wrapper{
+.logo-wrapper {
   width: 500px;
   margin: 0 auto;
   text-align: center;
   margin-bottom: 50px;
 }
 </style>
-
-

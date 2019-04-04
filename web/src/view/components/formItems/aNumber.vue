@@ -15,7 +15,6 @@ export default {
       type: Object
     }
   }
-
 }
 </script>
 <style scoped>

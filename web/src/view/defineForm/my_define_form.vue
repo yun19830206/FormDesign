@@ -25,7 +25,7 @@
 import formModel from "../components/defineForm/formModel.vue"
 import createItem from "../components/createItem.vue"
 import { getFormConfigData, getMyFormData } from "@/api/data"
-console.log(getFormConfigData);
+//console.log(getFormConfigData);
 export default {
   name: "directive_page",
   components: {

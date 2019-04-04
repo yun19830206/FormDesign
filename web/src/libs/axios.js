@@ -48,7 +48,7 @@ class HttpRequest {
     instance.interceptors.request.use(config => {
       // 添加全局的loading...
       let wxCode = getCode('code')
-      console.log(config)
+      //console.log(config)
       if (wxCode) {
         if (config.url.includes('?')) {
           config.url += `&wxCode=${wxCode}`

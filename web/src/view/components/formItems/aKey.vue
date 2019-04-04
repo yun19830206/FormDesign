@@ -4,7 +4,7 @@
     <Select v-model="formItem[info.englishName]">
       <Option v-for="i in selectVal"
               :key="i.id"
-              :value="i.id">{{i.displayValue}}</Option>
+              :value="i.id + ''">{{i.displayValue}}</Option>
     </Select>
   </FormItem>
 </template>

@@ -18,7 +18,6 @@ import dada from '@/view/update/update-table.vue'
  *  beforeCloseName: (-) 设置该字段，则在关闭当前tab页时会去'@/router/before-close.js'里寻找该字段名对应的方法，作为关闭前的钩子函数
  * }
  */
-console.log(dada, 'llllllllllllll')
 let routerArr = [
   {
     path: '/login',
@@ -190,7 +189,7 @@ let routerArr = [
 ]
 
 // getListData().then((res) => {
-//   console.log(res.data, '-----------')
+//   //console.log(res.data, '-----------')
 //   let childArr = [];
 //   //{
 //   //         path: 'my_define_form',
@@ -224,5 +223,5 @@ let routerArr = [
 //   // routerArr[3].children = childArr
 //   // routerArr[4].children.splice(0,1)
 // })
-console.log(routerArr)
+// console.log(routerArr)
 export default routerArr

@@ -10,7 +10,7 @@ import {
   getUnreadCount
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
-
+import Vue from 'vue' // 导入的目的，本js中就可以使用vue里面组件了
 export default {
   state: {
     userName: '',
@@ -80,26 +80,38 @@ export default {
         login({
           userName,
           password
-        }).then(res => {
-          const data = res.data
-          commit('setToken', data.token)
-          resolve()
-        }).catch(err => {
-          reject(err)
         })
+          .then(res => {
+            if (res.data.code === 200) {
+              const data = res.data
+              commit('setToken', data.token)
+              resolve()
+            } else {
+              Vue.prototype.$Message.error({
+                content: res.data.message,
+                duration: 5,
+                closable: true
+              })
+            }
+          })
+          .catch(err => {
+            reject(err)
+          })
       })
     },
     // 退出登录
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('setToken', '')
-          commit('setAccess', [])
-          resolve()
-          localStorage.setItem('login','')
-        }).catch(err => {
-          reject(err)
-        })
+        logout(state.token)
+          .then(() => {
+            commit('setToken', '')
+            commit('setAccess', [])
+            resolve()
+            localStorage.setItem('login', '')
+          })
+          .catch(err => {
+            reject(err)
+          })
         // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
         // commit('setToken', '')
         // commit('setAccess', [])
@@ -110,17 +122,19 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
-            const data = res.data
-            commit('setAvator', data.avator)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
-            commit('setHasGetInfo', true)
-            resolve(data)
-          }).catch(err => {
-            reject(err)
-          })
+          getUserInfo(state.token)
+            .then(res => {
+              const data = res.data
+              commit('setAvator', data.avator)
+              commit('setUserName', data.name)
+              commit('setUserId', data.user_id)
+              commit('setAccess', data.access)
+              commit('setHasGetInfo', true)
+              resolve(data)
+            })
+            .catch(err => {
+              reject(err)
+            })
         } catch (error) {
           reject(error)
         }
@@ -136,21 +150,42 @@ export default {
     // 获取消息列表，其中包含未读、已读、回收站三个列表
     getMessageList ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        getMessage().then(res => {
-          const { unread, readed, trash } = res.data
-          commit('setMessageUnreadList', unread.sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
-          commit('setMessageReadedList', readed.map(_ => {
-            _.loading = false
-            return _
-          }).sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
-          commit('setMessageTrashList', trash.map(_ => {
-            _.loading = false
-            return _
-          }).sort((a, b) => new Date(b.create_time) - new Date(a.create_time)))
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        getMessage()
+          .then(res => {
+            const { unread, readed, trash } = res.data
+            commit(
+              'setMessageUnreadList',
+              unread.sort(
+                (a, b) => new Date(b.create_time) - new Date(a.create_time)
+              )
+            )
+            commit(
+              'setMessageReadedList',
+              readed
+                .map(_ => {
+                  _.loading = false
+                  return _
+                })
+                .sort(
+                  (a, b) => new Date(b.create_time) - new Date(a.create_time)
+                )
+            )
+            commit(
+              'setMessageTrashList',
+              trash
+                .map(_ => {
+                  _.loading = false
+                  return _
+                })
+                .sort(
+                  (a, b) => new Date(b.create_time) - new Date(a.create_time)
+                )
+            )
+            resolve()
+          })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
     // 根据当前点击的消息的id获取内容
@@ -171,47 +206,53 @@ export default {
     // 把一个未读消息标记为已读
     hasRead ({ state, commit }, { msg_id }) {
       return new Promise((resolve, reject) => {
-        hasRead(msg_id).then(() => {
-          commit('moveMsg', {
-            from: 'messageUnreadList',
-            to: 'messageReadedList',
-            msg_id
+        hasRead(msg_id)
+          .then(() => {
+            commit('moveMsg', {
+              from: 'messageUnreadList',
+              to: 'messageReadedList',
+              msg_id
+            })
+            commit('setMessageCount', state.unreadCount - 1)
+            resolve()
           })
-          commit('setMessageCount', state.unreadCount - 1)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
     // 删除一个已读消息到回收站
     removeReaded ({ commit }, { msg_id }) {
       return new Promise((resolve, reject) => {
-        removeReaded(msg_id).then(() => {
-          commit('moveMsg', {
-            from: 'messageReadedList',
-            to: 'messageTrashList',
-            msg_id
+        removeReaded(msg_id)
+          .then(() => {
+            commit('moveMsg', {
+              from: 'messageReadedList',
+              to: 'messageTrashList',
+              msg_id
+            })
+            resolve()
           })
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
     // 还原一个已删除消息到已读消息
     restoreTrash ({ commit }, { msg_id }) {
       return new Promise((resolve, reject) => {
-        restoreTrash(msg_id).then(() => {
-          commit('moveMsg', {
-            from: 'messageTrashList',
-            to: 'messageReadedList',
-            msg_id
+        restoreTrash(msg_id)
+          .then(() => {
+            commit('moveMsg', {
+              from: 'messageTrashList',
+              to: 'messageReadedList',
+              msg_id
+            })
+            resolve()
           })
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+          .catch(error => {
+            reject(error)
+          })
       })
     }
   }

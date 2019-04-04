@@ -24,7 +24,7 @@ export default {
                 this.formItem[this.info.englishName] = response.data.id
             }
             
-            // console.log(response,fileList)
+            // //console.log(response,fileList)
             // this.$refs.upload.clearFiles()
         },
         sendVal () {

@@ -68,11 +68,11 @@ export default {
             this.wx.closeWindow()
           }, 600)
         } else {
-          this.$toast.fail('提交失败！')
+          this.$toast.fail(res.data.message)
         }
         this.isSubmit = false
       }).catch(_ => {
-        console.log('fale')
+        //console.log('fale')
         this.isSubmit = false
       })
     },

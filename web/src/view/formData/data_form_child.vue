@@ -17,16 +17,9 @@
       </Col>
       <Col span="19"
            class="rightArea">
-      <!--<row>-->
-      <!--<Button type="primary" style="float: right;margin-left: 15px;" @click="ok" :disabled="this.treeId === ''">新增</Button>-->
-      <!--</row>-->
       <!--查询条件表-->
       <p class="table-title">查询条件</p>
       <Row>
-        <!--                    queryColumnName: value.tableColumnConfig.englishName,
-                    queryColumnType: value.queryType,
-                    queryValue: '',
-                    chineseName: value.tableColumnConfig.chineseName-->
         <Col span="6"
              v-for="(item, index) in queryCondition"
              :key="index"
@@ -61,10 +54,6 @@
     <Modal v-model="rowModal"
            title="详细信息"
            @on-ok="sureClose">
-      <!--<Row v-for="item in columnsDetail" :key="item.id" v-if="item.title !== 'action'">-->
-      <!--<i-col span="8">{{item.title}}</i-col>-->
-      <!--<i-col span="16">{{rowDetail[item.key] | isObj}}</i-col>-->
-      <!--</Row>-->
       <table class="ivu-table table"
              style="width: 400px;text-align: center;">
         <tr class="ivu-table-row"
@@ -80,8 +69,6 @@
                 :tableColumnConfigList="nowTreeData"
                 @close="modal1 = false"
                 @getVal="getVal"></createItem>
-    <!--自定义增加组件-->
-    <!-- <a :modal="modal1" :obj="data1"></a> -->
   </div>
 </template>
 <script>
@@ -293,11 +280,22 @@ export default {
         'columnValueList': list
       }
       addData(obj).then((res) => {
-        // //console.log(res.data, 'pppppppppppp')
+        // 判断返回结果 res是否正确。
+        // 错误谈错误提示 this.$Message 和以前一样 全局提示
+        // 成功关闭model  this.modal1 = false,
+        //   成功后更新列表。 this.getTabsData();
+        console.log('yun', res)
+        if (res.data.code === 500) {
+          this.$Message.error({
+            content: res.data.message,
+            duration: 3,
+            closable: true
+          })
+        } else {
+          this.modal1 = false
+          this.getTabsData()
+        }
       })
-      setTimeout(() => {
-        this.modal1 = false
-      }, 100)
     },
     sureClose () {
       this.rowModal = false
@@ -331,9 +329,6 @@ export default {
           })
         })
       })
-    },
-    ok () {
-      this.modal1 = true
     },
     getTabsData () {
       getListData().then((res) => {

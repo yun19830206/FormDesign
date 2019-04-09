@@ -105,12 +105,14 @@ export default {
     },
     ruleInline () {
       return this.tableColumnConfigList.tableColumnConfigList ? this.tableColumnConfigList.tableColumnConfigList.reduce((res, item) => {
-        console.log('ruleInline in return', res, item)
+        // console.log('ruleInline in return', res, item)
         res[item.englishName] = []
         // 增加唯一性校验
         if (item.uniqued === 1) {
           res[item.englishName].push({ validator: this.validateuniqued, trigger: 'blur' })
         }
+
+        // 增加非空判断，  //暂时注销，实现 非空与数字共同作用功能
         if (item.empty === 0) {
           res[item.englishName].push({ required: true, message: '请输入' + item.chineseName, trigger: 'blur' })
         }
@@ -187,6 +189,7 @@ export default {
       this.$refs.formInline.validate((valid) => {
         if (valid) {
           this.$emit('getVal', this.formItem)
+          this.loading = false
         } else {
           this.loading = false
         }

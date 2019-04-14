@@ -26,7 +26,10 @@ let routerArr = [
       title: 'Login - 登录',
       hideInMenu: true
     },
-    component: () => import('@/view/login/login.vue')
+    // component: () => import('@/view/login/login.vue')
+    component (resolve) {
+      require(['@/view/login/login.vue'], resolve)
+    }
   },
   {
     path: '/',
@@ -47,7 +50,10 @@ let routerArr = [
           notCache: true,
           icon: 'md-home'
         },
-        component: () => import('@/view/single-page/home')
+        // component: () => import('@/view/single-page/home')
+        component (resolve) {
+          require(['@/view/single-page/home'], resolve)
+        }
       }
     ]
   },
@@ -67,7 +73,10 @@ let routerArr = [
           icon: 'ios-document',
           title: '我定义表单'
         },
-        component: () => import('@/view/defineForm/my_define_form.vue')
+        // component: () => import('@/view/defineForm/my_define_form.vue')
+        component (resolve) {
+          require(['@/view/defineForm/my_define_form.vue'], resolve)
+        }
       },
       {
         path: 'new_define_form',
@@ -76,7 +85,10 @@ let routerArr = [
           icon: 'md-clipboard',
           title: '新定义表单'
         },
-        component: () => import('@//view/defineForm/new_define_form.vue')
+        // component: () => import('@//view/defineForm/new_define_form.vue')
+        component (resolve) {
+          require(['@/view/defineForm/new_define_form.vue'], resolve)
+        }
       }
     ]
   },
@@ -96,7 +108,10 @@ let routerArr = [
           title: '表单页面',
           icon: 'md-cloud-upload'
         },
-        component: () => import('@/view/formData/data_form_child.vue')
+        // component: () => import('@/view/formData/data_form_child.vue')
+        component (resolve) {
+          require(['@/view/formData/data_form_child.vue'], resolve)
+        }
       }
     ]
   },
@@ -116,7 +131,10 @@ let routerArr = [
           icon: 'ios-document',
           title: '定制功能1'
         },
-        component: () => import('@/view/update/update-table.vue')
+        // component: () => import('@/view/update/update-table.vue')
+        component (resolve) {
+          require(['@/view/update/update-table.vue'], resolve)
+        }
       },
       {
         path: 'customization2',
@@ -125,7 +143,10 @@ let routerArr = [
           icon: 'md-clipboard',
           title: '定制功能2'
         },
-        component: () => import('@/view/update/update-paste.vue')
+        // component: () => import('@/view/update/update-paste.vue')
+        component (resolve) {
+          require(['@/view/update/update-paste.vue'], resolve)
+        }
       }
     ]
   },
@@ -135,7 +156,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/401.vue')
+    // component: () => import('@/view/error-page/401.vue')
+    component (resolve) {
+      require(['@/view/error-page/401.vue'], resolve)
+    }
   },
   {
     path: '/500',
@@ -143,7 +167,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/500.vue')
+    // component: () => import('@/view/error-page/500.vue')
+    component (resolve) {
+      require(['@/view/error-page/500.vue'], resolve)
+    }
   },
   {
     path: '*',
@@ -151,7 +178,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/404.vue')
+    // component: () => import('@/view/error-page/404.vue')
+    component (resolve) {
+      require(['@/view/error-page/404.vue'], resolve)
+    }
   },
 
   {
@@ -160,7 +190,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/wechat/wechat_login.vue')
+    // component: () => import('@/view/wechat/wechat_login.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_login.vue'], resolve)
+    }
   },
   {
     path: '/wechat_form',
@@ -168,7 +201,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/wechat/wechat_form.vue')
+    // component: () => import('@/view/wechat/wechat_form.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_form.vue'], resolve)
+    }
   },
   {
     path: '/wechat_form_display/:id',
@@ -176,7 +212,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/wechat/wechat_form_display.vue')
+    // component: () => import('@/view/wechat/wechat_form_display.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_form_display.vue'], resolve)
+    }
   },
   {
     path: '/wechat_form_add/:id',
@@ -184,7 +223,10 @@ let routerArr = [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/wechat/wechat_form_add.vue')
+    // component: () => import('@/view/wechat/wechat_form_add.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_form_add.vue'], resolve)
+    }
   }
 ]
 

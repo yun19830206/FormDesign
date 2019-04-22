@@ -86,11 +86,11 @@ module.exports = {
     open: process.env.NODE_ENV === 'development',
     host: 'localhost',
     port: 8888,
-    https: true,
+    https: false,
     hotOnly: false,
     open: true,
     proxy: '', // string | Object
-    before: app => {}
+    before: app => { }
   },
   // 第三方插件的选项
   pluginOptions: {}

@@ -37,15 +37,17 @@ export default {
   },
   methods: {
     onLoad (name) {
-      getListData().then(res => {
-        if (res.data.code === 200) {
-          this.list = res.data.data
-        } else {
-          this.error = true
-        }
-        this.loading = false
-        this.finished = true
-      }).catch(_ => this.loading = false)
+      getListData()
+        .then(res => {
+          if (res.data.code === 200) {
+            this.list = res.data.data
+          } else {
+            this.error = true
+          }
+          this.loading = false
+          this.finished = true
+        })
+        .catch(_ => (this.loading = false))
     },
     gotoView (id) {
       this.$router.push('/wechat_form_display/' + id)
@@ -68,7 +70,6 @@ export default {
     //     }
     //   }, 500);
     // }
-
   }
 }
 </script>

@@ -2,7 +2,7 @@ import Main from '@/components/main'
 // import parentView from '@/components/parent-view'
 // import axios from 'axios'
 // import { getListData } from '../api/data'
-import dada from '@/view/update/update-table.vue'
+
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
  * meta: {
@@ -61,7 +61,7 @@ let routerArr = [
     path: '/define_form',
     name: 'define_form',
     meta: {
-      icon: 'md-cloud-upload',
+      icon: 'logo-buffer',
       title: '定义表单'
     },
     component: Main,
@@ -70,7 +70,7 @@ let routerArr = [
         path: 'my_define_form',
         name: 'my_define_form',
         meta: {
-          icon: 'ios-document',
+          icon: 'md-list-box',
           title: '我定义表单'
         },
         // component: () => import('@/view/defineForm/my_define_form.vue')
@@ -96,8 +96,8 @@ let routerArr = [
     path: '/form_data',
     name: 'form_data',
     meta: {
-      icon: 'md-cloud-upload',
-      title: '表单数据'
+      icon: 'md-list-box',
+      title: '表单数据111'
     },
     component: Main,
     children: [
@@ -106,7 +106,7 @@ let routerArr = [
         name: 'form_data_child',
         meta: {
           title: '表单页面',
-          icon: 'md-cloud-upload'
+          icon: 'ios-list-box'
         },
         // component: () => import('@/view/formData/data_form_child.vue')
         component (resolve) {
@@ -119,7 +119,7 @@ let routerArr = [
     path: '/business_customization',
     name: 'business_customization',
     meta: {
-      icon: 'md-cloud-upload',
+      icon: 'ios-calendar',
       title: '业务定制功能'
     },
     component: Main,
@@ -128,7 +128,7 @@ let routerArr = [
         path: 'customization1',
         name: 'customization1',
         meta: {
-          icon: 'ios-document',
+          icon: 'ios-cog',
           title: '定制功能1'
         },
         // component: () => import('@/view/update/update-table.vue')
@@ -140,7 +140,7 @@ let routerArr = [
         path: 'customization2',
         name: 'customization2',
         meta: {
-          icon: 'md-clipboard',
+          icon: 'ios-cog',
           title: '定制功能2'
         },
         // component: () => import('@/view/update/update-paste.vue')
@@ -227,43 +227,18 @@ let routerArr = [
     component (resolve) {
       require(['@/view/wechat/wechat_form_add.vue'], resolve)
     }
+  },
+  {
+    path: '/wechat_form_edit/:tid/:id',
+    name: 'wechat_form_edit',
+    meta: {
+      hideInMenu: true
+    },
+    // component: () => import('@/view/wechat/wechat_form_add.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_form_edit.vue'], resolve)
+    }
   }
 ]
 
-// getListData().then((res) => {
-//   //console.log(res.data, '-----------')
-//   let childArr = [];
-//   //{
-//   //         path: 'my_define_form',
-//   //         name: 'my_define_form',
-//   //         meta: {
-//   //           icon: 'ios-document',
-//   //           title: '我定义表单'
-//   //         },
-//   //         component: () => import('@/view/defineForm/my_define_form.vue')
-//   //       },
-//   //       {
-//   //         path: 'new_define_form',
-//   //         name: 'new_define_form',
-//   //         meta: {
-//   //           icon: 'md-clipboard',
-//   //           title: '新定义表单'
-//   //         },
-//   //         component: () => import('@//view/defineForm/new_define_form.vue')
-//   //       }
-//   res.data.data.forEach((val) => {
-//     let childObj = {}
-//     childObj.path = val.englishName;
-//     childObj.name = routerArr[3].children[0].name;
-//     childObj.meta = {
-//       icon: 'iii',
-//       title: val.chineseName
-//     }
-//     childObj.component = () => import('@/view/defineForm/my_define_form.vue')
-//     childArr.push(childObj)
-//   })
-//   // routerArr[3].children = childArr
-//   // routerArr[4].children.splice(0,1)
-// })
-// console.log(routerArr)
 export default routerArr

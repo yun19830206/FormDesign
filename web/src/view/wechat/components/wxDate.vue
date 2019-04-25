@@ -3,11 +3,13 @@
     <van-cell is-link
               @click="showSelect = !showSelect,err = false"
               :title="info.chineseName"
+              :required="info.empty === 0"
               :value="formItem.input">
       <span v-if="err"
             slot="right-icon"
             class="err-tip">请选择{{info.chineseName}}
-        <van-icon name="arrow" /></span>
+        <van-icon name="arrow" />
+      </span>
     </van-cell>
     <van-popup position="bottom"
                v-model="showSelect">
@@ -24,6 +26,12 @@
 <script>
 export default {
   props: {
+    isEit: {
+      type: Boolean
+    },
+    editVal: {
+      type: Object
+    },
     info: {
       type: Object
     }
@@ -38,8 +46,15 @@ export default {
       showSelect: false
     }
   },
-  created () {
+  watch: {
+    editVal (v) {
+      this.formItem.input = v[this.info.englishName] ? v[this.info.englishName].substring(0, 10) : ''
+      this.val = v[this.info.englishName] ? new Date(v[this.info.englishName].replace(/-/g, '/')
+        .replace('T', ' ')
+        .replace('.000+0000', '')) : new Date()
+    }
   },
+  created () { },
   methods: {
     async sendVal () {
       if (this.info.empty === 0 && this.formItem.input.trim() === '') {
@@ -57,9 +72,7 @@ export default {
       this.formItem.input = val.format('yyyy-MM-dd')
       this.showSelect = false
     }
-
   }
-
 }
 </script>
 <style scoped>

@@ -1,30 +1,33 @@
 <template>
-    <Modal
-        width="1200px"
-        v-model="show"
-        title="详情"
-        @on-cancel="cancel">
-        <Row>
-            <p class="table-title">表单配置展示</p>
-            <Table :columns="tableConfigColumns" :data="[tableConfig]"></Table>
-        </Row>
-        <Divider></Divider>
-        <Row>
-            <p class="table-title">表单配置字段展示</p>
-            <Table :columns="tableColumnConfigListColumns" :data="tableColumnConfigList"></Table>
-        </Row>
-        <Divider></Divider>
-        <Row>
-            <p class="table-title">表单查询条件配置展示</p>
-            <Table :columns="tableQueryConfigListColumns" :data="tableQueryConfigList"></Table>
-        </Row>
-        <Divider></Divider>
-        <Row>
-            <p class="table-title">表单查询结果字段展示</p>
-            <Table :columns="tableDisplayConfigListColumns" :data="tableDisplayConfigList"></Table>
-        </Row>
-        <Divider></Divider>
-    </Modal>
+  <Modal width="1200px"
+         v-model="show"
+         title="详情"
+         @on-cancel="cancel">
+    <Row>
+      <p class="table-title">表单配置展示</p>
+      <Table :columns="tableConfigColumns"
+             :data="[tableConfig]"></Table>
+    </Row>
+    <Divider></Divider>
+    <Row>
+      <p class="table-title">表单配置字段展示</p>
+      <Table :columns="tableColumnConfigListColumns"
+             :data="tableColumnConfigList"></Table>
+    </Row>
+    <Divider></Divider>
+    <Row>
+      <p class="table-title">表单查询条件配置展示</p>
+      <Table :columns="tableQueryConfigListColumns"
+             :data="tableQueryConfigList"></Table>
+    </Row>
+    <Divider></Divider>
+    <Row>
+      <p class="table-title">表单查询结果字段展示</p>
+      <Table :columns="tableDisplayConfigListColumns"
+             :data="tableDisplayConfigList"></Table>
+    </Row>
+    <Divider></Divider>
+  </Modal>
 </template>
 <script>
 export default {
@@ -33,49 +36,49 @@ export default {
       type: Boolean
     },
     tableColumnConfigList: {
-      type:Array
+      type: Array
     },
     tableConfig: {
-      type:Object
+      type: Object
     },
     tableDisplayConfigList: {
-      type:Array
+      type: Array
     },
     tableQueryConfigList: {
-      type:Array
+      type: Array
     },
     tableConfigColumns: {
-      type:Array
+      type: Array
     },
     tableColumnConfigListColumns: {
-      type:Array
+      type: Array
     },
     tableQueryConfigListColumns: {
-      type:Array
+      type: Array
     },
     tableDisplayConfigListColumns: {
-      type:Array
+      type: Array
     }
   },
-  data() {
-    return {};
+  data () {
+    return {}
   },
   computed: {
     show: {
-      get() {
-        return this.modelShow;
+      get () {
+        return this.modelShow
       },
-      set() {
-        this.$emit("close");
+      set () {
+        this.$emit('close')
       }
     }
   },
   methods: {
-      cancel() {
-        this.$emit("close");
-      }
+    cancel () {
+      this.$emit('close')
+    }
   }
-};
+}
 </script>
 <style scoped>
 .table-title {
@@ -83,5 +86,3 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-

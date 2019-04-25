@@ -1,13 +1,15 @@
 <template>
   <div>
     <van-cell is-link
+              :required="info.empty === 0"
               @click="showSelect = !showSelect,err = false"
               :title="info.chineseName"
               :value="formItem.input">
       <span v-if="err"
             slot="right-icon"
             class="err-tip">请选择{{info.chineseName}}
-        <van-icon name="arrow" /></span>
+        <van-icon name="arrow" />
+      </span>
     </van-cell>
     <van-popup position="bottom"
                v-model="showSelect">
@@ -24,6 +26,12 @@
 <script>
 export default {
   props: {
+    isEit: {
+      type: Boolean
+    },
+    editVal: {
+      type: Object
+    },
     info: {
       type: Object
     }
@@ -38,6 +46,11 @@ export default {
       showSelect: false
     }
   },
+  watch: {
+    editVal (v) {
+      this.formItem.input = v[this.info.englishName] || ''
+    }
+  },
   created () {
     this.columns = this.info.dropValue.split(',')
     this.formItem.input = this.info.defaultValue || ''
@@ -46,7 +59,6 @@ export default {
     defaultIndex () {
       return this.columns.indexOf(this.formItem.input)
     }
-
   },
   methods: {
     async sendVal () {
@@ -56,10 +68,10 @@ export default {
       }
       if (this.info.uniqued === 1) {
         let data = {
-          'tableId': this.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
-          'tableName': this.tableConfig.englishName, // [必填]表单配置的表名称
-          'columnName': this.info.englishName, // [必填]判断重复的字段名
-          'columnValue': this.formItem.input.trim()
+          tableId: this.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
+          tableName: this.tableConfig.englishName, // [必填]表单配置的表名称
+          columnName: this.info.englishName, // [必填]判断重复的字段名
+          columnValue: this.formItem.input.trim()
         }
         let res = await uniquedData(data)
         if (res.data.code === 500) {
@@ -87,9 +99,7 @@ export default {
       this.formItem.input = val
       this.showSelect = false
     }
-
   }
-
 }
 </script>
 <style scoped>

@@ -61,20 +61,21 @@ export default {
         wxCode: this.getQueryString('code')
       }
       this.isSubmit = true
-      login(data).then(res => {
-        if (res.data.code === 200) {
-          this.$toast.success('绑定成功！')
-          setTimeout(() => {
-            this.wx.closeWindow()
-          }, 600)
-        } else {
-          this.$toast.fail(res.data.message)
-        }
-        this.isSubmit = false
-      }).catch(_ => {
-        //console.log('fale')
-        this.isSubmit = false
-      })
+      login(data)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$toast.success('绑定成功！')
+            setTimeout(() => {
+              this.wx.closeWindow()
+            }, 600)
+          } else {
+            this.$toast.fail(res.data.message)
+          }
+          this.isSubmit = false
+        })
+        .catch(_ => {
+          this.isSubmit = false
+        })
     },
     getQueryString (name) {
       var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')

@@ -1,17 +1,18 @@
 <template>
   <Modal v-model="show"
-         title="新增数据"
+         :title="isEdit ? '编辑数据' : '新增数据'"
          :loading="loading"
          @on-ok="ok"
-         @on-visible-change="statusChange"
          @on-cancel="cancel">
-    <Form ref="formInline"
+    <Form v-if="show"
+          ref="formInline"
           :rules="ruleInline"
           :model="formItem"
           :label-width="80">
       <div ref="item"
            :form_validate="ruleInline"
-           v-for="item in tableColumnConfigList.tableColumnConfigList"
+           default
+           v-for="item in needSubmitItems"
            :foreignKeyValues="tableColumnConfigList.foreignKeyValues"
            :key="item.id + '-' + item.tableId"
            :formItem="formItem"
@@ -42,6 +43,12 @@ export default {
     },
     tableColumnConfigList: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean
+    },
+    editData: {
+      type: Array
     }
   },
   // 引用外部组件注册。只需要调用组件的方法即可，组件内部是独立的。组件引用多以此方式进行
@@ -65,23 +72,33 @@ export default {
       formItem: {},
       form: {},
       componentName: {
-        'COLUMN_SIGN_LINE_TEXT': 'a-input',
-        'COLUMN_DROP_BOX': 'a-select',
-        'COLUMN_RICH_TEXT': 'a-rich',
-        'COLUMN_MANY_LINE_TEXT': 'a-area',
-        'COLUMN_DATE_TIME': 'a-date',
-        'COLUMN_NUMBER': 'a-number',
-        'COLUMN_PHONE_NUMBER': 'a-phone',
-        'COLUMN_EMAIL': 'a-mail',
-        'COLUMN_FILE': 'a-file',
-        'COLUMN_FOREIGN_KEY': 'a-key'
+        COLUMN_SIGN_LINE_TEXT: 'a-input',
+        COLUMN_DROP_BOX: 'a-select',
+        COLUMN_RICH_TEXT: 'a-rich',
+        COLUMN_MANY_LINE_TEXT: 'a-area',
+        COLUMN_DATE_TIME: 'a-date',
+        COLUMN_NUMBER: 'a-number',
+        COLUMN_PHONE_NUMBER: 'a-phone',
+        COLUMN_EMAIL: 'a-mail',
+        COLUMN_FILE: 'a-file',
+        COLUMN_FOREIGN_KEY: 'a-key'
+      }
+    }
+  },
+  watch: {
+    show (v) {
+      if (v && this.isEdit) {
+        this.editData.map(item => {
+          this.formItem[item.englishName] = item.value
+        })
+        console.log(this.formItem, this.editData)
       }
     }
   },
 
   // created运行时，还未挂载到DOM，不能访问到$el属性，可用于初始化一些数据，但和DOM操作相关的不能在created中执行
   created () {
-    this.resetForm()
+
     // console.log('created ()', this.tableColumnConfigList)
   },
 
@@ -103,18 +120,33 @@ export default {
         this.$emit('close', val)
       }
     },
+    needSubmitItems () {
+      return (this.tableColumnConfigList.tableColumnConfigList || []).filter(
+        item =>
+          !['create_user_name', 'create_time', 'update_time'].includes(
+            item.englishName
+          )
+      )
+    },
     ruleInline () {
-      return this.tableColumnConfigList.tableColumnConfigList ? this.tableColumnConfigList.tableColumnConfigList.reduce((res, item) => {
+      return this.needSubmitItems.reduce((res, item) => {
         // console.log('ruleInline in return', res, item)
         res[item.englishName] = []
         // 增加唯一性校验
         if (item.uniqued === 1) {
-          res[item.englishName].push({ validator: this.validateuniqued, trigger: 'blur' })
+          res[item.englishName].push({
+            validator: this.validateuniqued,
+            trigger: 'blur'
+          })
         }
 
         // 增加非空判断，  //暂时注销，实现 非空与数字共同作用功能
         if (item.empty === 0) {
-          res[item.englishName].push({ required: true, message: '请输入' + item.chineseName, trigger: 'blur' })
+          res[item.englishName].push({
+            required: true,
+            message: '请输入' + item.chineseName,
+            trigger: 'blur'
+          })
         }
 
         // // 增加必填与数字校验：先都有，后单个有
@@ -130,7 +162,7 @@ export default {
         //   }
         // }
         return res
-      }, {}) : {}
+      }, {})
     }
   },
 
@@ -139,10 +171,10 @@ export default {
     /** 表单唯一性异步校验  */
     async validateuniqued (rule, value, callback) {
       let data = {
-        'tableId': this.tableColumnConfigList.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
-        'tableName': this.tableColumnConfigList.tableConfig.englishName, // [必填]表单配置的表名称
-        'columnName': rule.field, // [必填]判断重复的字段名
-        'columnValue': value
+        tableId: this.tableColumnConfigList.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
+        tableName: this.tableColumnConfigList.tableConfig.englishName, // [必填]表单配置的表名称
+        columnName: rule.field, // [必填]判断重复的字段名
+        columnValue: value
       }
       let res = await uniquedData(data)
       if (res.data.code === 500) {
@@ -165,28 +197,10 @@ export default {
       }
     },
 
-    /** 手动重置表单 */
-    resetForm () {
-      this.tableColumnConfigList.tableColumnConfigList ? this.tableColumnConfigList.tableColumnConfigList.map(item => {
-        this.$set(this.formItem, item.englishName, item.defaultValue || '')
-      }) : []
-    },
-
-    /** 模态框显示时重置表单 */
-    statusChange (val) {
-      if (val) {
-        this.$nextTick(_ => {
-          this.$refs.formInline.resetFields()
-          this.formItem = {}
-          this.resetForm()
-        })
-      }
-    },
-
     /** 数据提交 */
     ok () {
       this.loading = true
-      this.$refs.formInline.validate((valid) => {
+      this.$refs.formInline.validate(valid => {
         if (valid) {
           this.$emit('getVal', this.formItem)
           this.loading = false

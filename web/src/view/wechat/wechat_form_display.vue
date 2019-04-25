@@ -5,12 +5,16 @@
         <th nowrap="nowrap"
             v-for="cg in configData"
             :key="cg.id">{{cg.tableColumnConfig.chineseName}}</th>
+        <th nowrap="nowrap">操作</th>
       </tr>
       <tr v-for="l in list"
           :key="l.id">
         <td v-for="cg in configData"
             :key="cg.id + '' + l.id">
           <span v-html="computedVal(l,cg)"></span>
+        </td>
+        <td>
+          <a :href="'/#/wechat_form_edit/' + id + '/' + l.id ">编辑</a>
         </td>
       </tr>
     </table>
@@ -60,37 +64,59 @@ export default {
   },
   methods: {
     computedVal (l, cg) {
-      if (cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME' && l[cg.tableColumnConfig.englishName]) {
-        return new Date(l[cg.tableColumnConfig.englishName].replace(/-/g, '/').replace('T', ' ').replace('.000+0000', '')).format('yyyy-MM-dd hh:mm:ss')
+      if (
+        cg.tableColumnConfig.colType === 'COLUMN_DATE_TIME' &&
+        l[cg.tableColumnConfig.englishName]
+      ) {
+        return new Date(
+          l[cg.tableColumnConfig.englishName]
+            .replace(/-/g, '/')
+            .replace('T', ' ')
+            .replace('.000+0000', '')
+        ).format('yyyy-MM-dd hh:mm:ss')
       } else if (cg.tableColumnConfig.colType === 'COLUMN_FILE') {
-        return ('<a href="' +
+        return (
+          '<a href="' +
           this.baseUrl +
           'aiassistant/file/get/file?fileId=' +
-          (l[cg.tableColumnConfig.englishName] ? l[cg.tableColumnConfig.englishName].originValue : '') +
+          (l[cg.tableColumnConfig.englishName]
+            ? l[cg.tableColumnConfig.englishName].originValue
+            : '') +
           '">' +
-          (l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue === undefined ? l[cg.tableColumnConfig.englishName] : l[cg.tableColumnConfig.englishName].displayValue) : '') +
-          '</a>')
+          (l[cg.tableColumnConfig.englishName]
+            ? l[cg.tableColumnConfig.englishName].displayValue === undefined
+              ? l[cg.tableColumnConfig.englishName]
+              : l[cg.tableColumnConfig.englishName].displayValue
+            : '') +
+          '</a>'
+        )
       } else {
-        return l[cg.tableColumnConfig.englishName] ? (l[cg.tableColumnConfig.englishName].displayValue === undefined ? l[cg.tableColumnConfig.englishName] : l[cg.tableColumnConfig.englishName].displayValue) : ''
+        return l[cg.tableColumnConfig.englishName]
+          ? l[cg.tableColumnConfig.englishName].displayValue === undefined
+            ? l[cg.tableColumnConfig.englishName]
+            : l[cg.tableColumnConfig.englishName].displayValue
+          : ''
       }
     },
     onLoad (id) {
-      getFormConfigData(id).then(res => {
-        if (res.data.code === 200) {
-          this.configData = res.data.data.tableDisplayConfigList
-          this.loadData(1)
-        } else {
-
-        }
-        this.loading = false
-      }).catch(_ => this.loading = false)
+      getFormConfigData(id)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.configData = res.data.data.tableDisplayConfigList
+            this.loadData(1)
+          } else {
+          }
+          this.loading = false
+        })
+        .catch(_ => (this.loading = false))
     },
     loadData () {
       let data = {
-        'pageNum': this.currentPage, // 请求页码
-        'pageSize': this.pageSize, // 每页数量
-        'dto': { // 业务查询条件
-          'tableId': this.id
+        pageNum: this.currentPage, // 请求页码
+        pageSize: this.pageSize, // 每页数量
+        dto: {
+          // 业务查询条件
+          tableId: this.id
         }
       }
       getFormData(data).then(res => {
@@ -98,7 +124,6 @@ export default {
           this.list = res.data.data.list
           this.total = res.data.data.total
         } else {
-
         }
         this.loading = false
       })
@@ -111,7 +136,6 @@ export default {
       this.currentPage = page
       this.loadData()
     }
-
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    首页
+    欢迎使用云问CRM助手
   </div>
 </template>
 
@@ -9,11 +9,11 @@
 export default {
   name: 'home',
   components: {
-    
+
   },
   data () {
     return {
-      
+
     }
   },
   mounted () {
@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style lang="less">
-.count-style{
+.count-style {
   font-size: 50px;
 }
 </style>

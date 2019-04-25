@@ -1,6 +1,7 @@
 <template>
   <van-cell :title="info.chineseName"
-            :value="formItem.input">
+            :value="formItem.input"
+            :required="info.empty === 0">
     <van-uploader slot="right-icon"
                   style="margin-left:5px;"
                   @click.native="err = false"
@@ -9,7 +10,8 @@
       <span v-if="err"
             slot="right-icon"
             class="err-tip">请选择{{info.chineseName}}
-        <van-icon name="upgrade" /></span>
+        <van-icon name="upgrade" />
+      </span>
       <van-icon v-else
                 name="upgrade" />
     </van-uploader>
@@ -19,6 +21,12 @@
 import { uploadFile } from '@/api/data'
 export default {
   props: {
+    isEit: {
+      type: Boolean
+    },
+    editVal: {
+      type: Object
+    },
     info: {
       type: Object
     }
@@ -30,6 +38,13 @@ export default {
       },
       fileId: '',
       err: false
+    }
+  },
+  watch: {
+    editVal (v) {
+      this.formItem.input = v[this.info.englishName].displayValue || ''
+      this.fileId = v[this.info.englishName].originValue
+      // console.log(v)
     }
   },
   methods: {
@@ -45,32 +60,33 @@ export default {
     onRead (data) {
       const formData = new FormData()
       formData.append('file', data.file)
-      uploadFile(formData).then(res => {
-        if (res.data.code === 200) {
-          this.formItem.input = res.data.data.fileNameOriginal
-          this.fileId = res.data.data.id
-          this.$notify({
-            message: res.data.message,
-            duration: 1000,
-            background: '#07c160'
-          })
-        } else {
+      uploadFile(formData)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.formItem.input = res.data.data.fileNameOriginal
+            this.fileId = res.data.data.id
+            this.$notify({
+              message: res.data.message,
+              duration: 1000,
+              background: '#07c160'
+            })
+          } else {
+            this.$notify({
+              message: res.data.message,
+              duration: 1000,
+              background: '#f44'
+            })
+          }
+        })
+        .catch(_ => {
           this.$notify({
             message: res.data.message,
             duration: 1000,
             background: '#f44'
           })
-        }
-      }).catch(_ => {
-        this.$notify({
-          message: res.data.message,
-          duration: 1000,
-          background: '#f44'
         })
-      })
     }
   }
-
 }
 </script>
 <style scoped>

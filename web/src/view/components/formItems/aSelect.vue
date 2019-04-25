@@ -19,17 +19,14 @@ export default {
     }
   },
   created () {
-    this.formItem[this.info.englishName] = this.info.defaultValue || ''
+    this.formItem[this.info.englishName] = this.formItem[this.info.englishName] || (this.info.defaultValue || '')
   },
   computed: {
     selectVal () {
       return this.info.dropValue.split(',')
     }
   },
-  methods: {
-
-  }
-
+  methods: {}
 }
 </script>
 <style scoped>

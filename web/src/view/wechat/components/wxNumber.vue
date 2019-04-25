@@ -4,6 +4,7 @@
              type="number"
              :label="info.chineseName"
              :error="err"
+             :required="info.empty === 0"
              @focus="err = false"
              :placeholder="'请输入' + info.chineseName" />
 </template>
@@ -11,6 +12,12 @@
 import { uniquedData } from '@/api/data'
 export default {
   props: {
+    isEit: {
+      type: Boolean
+    },
+    editVal: {
+      type: Object
+    },
     info: {
       type: Object
     },
@@ -26,6 +33,11 @@ export default {
       err: false
     }
   },
+  watch: {
+    editVal (v) {
+      this.formItem.input = v[this.info.englishName] || ''
+    }
+  },
   methods: {
     async sendVal () {
       if (this.info.empty === 0 && this.formItem.input.trim() === '') {
@@ -34,10 +46,10 @@ export default {
       }
       if (this.info.uniqued === 1) {
         let data = {
-          'tableId': this.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
-          'tableName': this.tableConfig.englishName, // [必填]表单配置的表名称
-          'columnName': this.info.englishName, // [必填]判断重复的字段名
-          'columnValue': this.formItem.input.trim()
+          tableId: this.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
+          tableName: this.tableConfig.englishName, // [必填]表单配置的表名称
+          columnName: this.info.englishName, // [必填]判断重复的字段名
+          columnValue: this.formItem.input.trim()
         }
         let res = await uniquedData(data)
         if (res.data.code === 500) {
@@ -59,7 +71,6 @@ export default {
       }
     }
   }
-
 }
 </script>
 <style scoped>

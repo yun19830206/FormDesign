@@ -26,9 +26,13 @@ export default {
       return this.foreignKeyValues[this.info.englishName]
     }
   },
-  methods: {
-  }
-
+  created () {
+    if (this.formItem[this.info.englishName]) {
+      let activeVal = this.selectVal.find(item => item.displayValue === this.formItem[this.info.englishName])
+      this.formItem[this.info.englishName] = activeVal ? (activeVal.id + '') : undefined
+    }
+  },
+  methods: {}
 }
 </script>
 <style scoped>

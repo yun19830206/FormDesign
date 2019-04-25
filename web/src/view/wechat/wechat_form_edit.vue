@@ -6,6 +6,8 @@
            :key="item.id + '-' + item.tableId"
            :is="componentName[item.colType]"
            :info="item"
+           :editVal="editVal"
+           :isEdit="true"
            :tableConfig="tableConfig"
            :foreignKeyValues="foreignKeyValues"></div>
     </van-cell-group>
@@ -22,7 +24,7 @@
 
 </template>
 <script>
-import { getFormConfigData, addData } from '@/api/data'
+import { getFormConfigData, showDetail } from '@/api/data'
 import wxInput from './components/wxInput.vue'
 import wxArea from './components/wxArea.vue'
 import wxDate from './components/wxDate.vue'
@@ -37,8 +39,10 @@ export default {
   data () {
     return {
       id: '',
+      tid: '',
       loading: false,
       tableColumnConfigList: [],
+      editVal: null,
       tableConfig: {},
       componentName: {
         COLUMN_SIGN_LINE_TEXT: 'wx-input',
@@ -70,7 +74,8 @@ export default {
     localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-新增数据'
     this.id = this.$route.params.id
-    this.onLoad(this.id)
+    this.tid = this.$route.params.tid
+    this.onLoad(this.tid)
   },
   methods: {
     onLoad (id) {
@@ -83,9 +88,19 @@ export default {
             this.tableConfig = res.data.data.tableConfig
           } else {
           }
+          // getSingleData() {
+          let data = {
+            tableId: this.tid, // [必填]表单主键ID，由当面所在表单查询页面维护
+            dataIdList: [this.id]
+          }
+          showDetail(data).then(res => {
+            this.editVal = res.data.data[0] || {}
+          })
+          // }
         })
         .catch(_ => (this.loading = false))
     },
+
     async submitInfo (pg) {
       this.loading = true
       let data = []
@@ -115,39 +130,39 @@ export default {
       })
       await Promise.all(promiseArr)
       if (validate) {
-        let params = {
-          tableId: this.id, // [必填]表单主键ID，由当面所在表单查询页面维护
-          tableName: this.tableName, // [必填]表单配置的表名称
-          columnValueList: data
-        }
+        // let params = {
+        //   tableId: this.id, // [必填]表单主键ID，由当面所在表单查询页面维护
+        //   tableName: this.tableName, // [必填]表单配置的表名称
+        //   columnValueList: data
+        // }
 
-        try {
-          let res = await addData(params)
-          this.loading = false
-          if (res.data.code === 200) {
-            this.$notify({
-              message: res.data.message,
-              duration: 1000,
-              background: '#07c160'
-            })
-            setTimeout(() => {
-              this.$router.push('/wechat_form/')
-            }, 600)
-          } else {
-            this.$notify({
-              message: res.data.message,
-              duration: 1000,
-              background: '#f44'
-            })
-          }
-        } catch (error) {
-          this.$notify({
-            message: '请求出错',
-            duration: 1000,
-            background: '#f44'
-          })
-          this.loading = false
-        }
+        // try {
+        //   let res = await addData(params)
+        //   this.loading = false
+        //   if (res.data.code === 200) {
+        //     this.$notify({
+        //       message: res.data.message,
+        //       duration: 1000,
+        //       background: '#07c160'
+        //     })
+        //     setTimeout(() => {
+        //       this.$router.push('/wechat_form/')
+        //     }, 600)
+        //   } else {
+        //     this.$notify({
+        //       message: res.data.message,
+        //       duration: 1000,
+        //       background: '#f44'
+        //     })
+        //   }
+        // } catch (error) {
+        //   this.$notify({
+        //     message: '请求出错',
+        //     duration: 1000,
+        //     background: '#f44'
+        //   })
+        //   this.loading = false
+        // }
       }
       this.loading = false
     },

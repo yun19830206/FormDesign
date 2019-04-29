@@ -89,9 +89,8 @@ export default {
     show (v) {
       if (v && this.isEdit) {
         this.editData.map(item => {
-          this.formItem[item.englishName] = item.value
+          this.formItem[item.englishName] = item.value + ''
         })
-        console.log(this.formItem, this.editData)
       }
     }
   },
@@ -133,7 +132,7 @@ export default {
         // console.log('ruleInline in return', res, item)
         res[item.englishName] = []
         // 增加唯一性校验
-        if (item.uniqued === 1) {
+        if (item.uniqued === 1 && !this.isEdit) {
           res[item.englishName].push({
             validator: this.validateuniqued,
             trigger: 'blur'

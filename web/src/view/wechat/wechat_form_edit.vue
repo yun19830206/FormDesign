@@ -24,7 +24,7 @@
 
 </template>
 <script>
-import { getFormConfigData, showDetail } from '@/api/data'
+import { getFormConfigData, showDetail, modifyData } from '@/api/data'
 import wxInput from './components/wxInput.vue'
 import wxArea from './components/wxArea.vue'
 import wxDate from './components/wxDate.vue'
@@ -130,39 +130,40 @@ export default {
       })
       await Promise.all(promiseArr)
       if (validate) {
-        // let params = {
-        //   tableId: this.id, // [必填]表单主键ID，由当面所在表单查询页面维护
-        //   tableName: this.tableName, // [必填]表单配置的表名称
-        //   columnValueList: data
-        // }
+        let params = {
+          tableId: this.tid, // [必填]表单主键ID，由当面所在表单查询页面维护
+          dataId: this.id,
+          tableName: this.tableName, // [必填]表单配置的表名称
+          columnValueList: data
+        }
 
-        // try {
-        //   let res = await addData(params)
-        //   this.loading = false
-        //   if (res.data.code === 200) {
-        //     this.$notify({
-        //       message: res.data.message,
-        //       duration: 1000,
-        //       background: '#07c160'
-        //     })
-        //     setTimeout(() => {
-        //       this.$router.push('/wechat_form/')
-        //     }, 600)
-        //   } else {
-        //     this.$notify({
-        //       message: res.data.message,
-        //       duration: 1000,
-        //       background: '#f44'
-        //     })
-        //   }
-        // } catch (error) {
-        //   this.$notify({
-        //     message: '请求出错',
-        //     duration: 1000,
-        //     background: '#f44'
-        //   })
-        //   this.loading = false
-        // }
+        try {
+          let res = await modifyData(params)
+          this.loading = false
+          if (res.data.code === 200) {
+            this.$notify({
+              message: res.data.message,
+              duration: 1000,
+              background: '#07c160'
+            })
+            setTimeout(() => {
+              this.$router.push('/wechat_form/')
+            }, 600)
+          } else {
+            this.$notify({
+              message: res.data.message,
+              duration: 1000,
+              background: '#f44'
+            })
+          }
+        } catch (error) {
+          this.$notify({
+            message: '请求出错',
+            duration: 1000,
+            background: '#f44'
+          })
+          this.loading = false
+        }
       }
       this.loading = false
     },

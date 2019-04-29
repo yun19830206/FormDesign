@@ -11,7 +11,7 @@
 import { uniquedData } from '@/api/data'
 export default {
   props: {
-    isEit: {
+    isEdit: {
       type: Boolean
     },
     editVal: {
@@ -43,7 +43,7 @@ export default {
         this.err = true
         return false
       }
-      if (this.info.uniqued === 1) {
+      if (this.info.uniqued === 1 && !this.isEdit) {
         let data = {
           tableId: this.tableConfig.id, // [必填]表单主键ID，由当面所在表单查询页面维护
           tableName: this.tableConfig.englishName, // [必填]表单配置的表名称

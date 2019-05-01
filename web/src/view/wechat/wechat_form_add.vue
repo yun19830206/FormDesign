@@ -76,6 +76,7 @@ export default {
     onLoad (id) {
       getFormConfigData(id)
         .then(res => {
+          // console.log(res)
           if (res.data.code === 200) {
             this.tableColumnConfigList = (res.data.data.tableColumnConfigList || []).filter(i => !['create_user_name', 'create_time', 'update_time'].includes(i.englishName))
             this.foreignKeyValues = res.data.data.foreignKeyValues

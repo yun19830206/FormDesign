@@ -71,7 +71,8 @@ import {
   getListData,
   getTableData,
   getFormData,
-  addData
+  addData,
+  modifyData
 } from '@/api/data'
 import createItem from '../components/createItem.vue'
 export default {
@@ -301,10 +302,12 @@ export default {
       let keys = Object.keys(data)
       let list = []
       keys.forEach(value => {
-        list.push({
-          columnName: value,
-          columnValue: data[value]
-        })
+        if (!['create_user_name', 'create_time', 'update_time'].includes(value)) {
+          list.push({
+            columnName: value,
+            columnValue: data[value]
+          })
+        }
       })
       let obj = {
         tableId: this.treeId, // [必填]表单主键ID，由当面所在表单查询页面维护
@@ -313,6 +316,19 @@ export default {
       }
       if (this.isEdit) {
         // 编辑表单
+        obj.dataId = this.columnsDetail.tableId
+        modifyData(obj).then(res => {
+          if (res.data.code === 500) {
+            this.$Message.error({
+              content: res.data.message,
+              duration: 3,
+              closable: true
+            })
+          } else {
+            this.createItemModalVisible = false
+            this.getTabsData()
+          }
+        })
       } else {
         addData(obj).then(res => {
           // 判断返回结果 res是否正确。
@@ -485,26 +501,28 @@ export default {
                 },
                 '查看'
               ),
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'success',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      getTableData(this.treeId).then(res => {
-                        this.rowDetail = params.row
-                        this.nowTreeData = res.data.data
-                        this.createItemModalVisible = true
-                        this.isEdit = true
-                      })
+              this.dataSetting.canEdit
+                ? h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        getTableData(this.treeId).then(res => {
+                          this.rowDetail = params.row
+                          this.nowTreeData = res.data.data
+                          this.createItemModalVisible = true
+                          this.isEdit = true
+                        })
+                      }
                     }
-                  }
-                },
-                '编辑'
-              )
+                  },
+                  '编辑'
+                )
+                : null
             ])
           }
         })

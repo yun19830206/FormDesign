@@ -11,7 +11,7 @@
 import { uniquedData } from '@/api/data'
 export default {
   props: {
-    isEit: {
+    isEdit: {
       type: Boolean
     },
     editVal: {

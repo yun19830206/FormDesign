@@ -28,9 +28,13 @@ export default {
         return this.formItem[this.info.englishName]
       },
       set (val) {
-        this.formItem[this.info.englishName] = new Date(val).format(
-          'yyyy-MM-dd hh:mm:ss'
-        )
+        if (val) {
+          this.formItem[this.info.englishName] = new Date(val).format(
+            'yyyy-MM-dd hh:mm:ss'
+          )
+        } else {
+          this.formItem[this.info.englishName] = ''
+        }
       }
     }
   }

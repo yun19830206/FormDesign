@@ -14,7 +14,29 @@ export const login = ({ userName, password }) => {
 
 export const logout = () => {
   return axios.request({
-    url: 'aiassistant/user/login/userlogout ',
+    url: 'aiassistant/user/login/userlogout',
+    method: 'post'
+  })
+}
+
+export const getCurrentUser = () => {
+  return axios.request({
+    url: 'aiassistant/user/get/loginuser',
+    method: 'post'
+  })
+}
+
+export const getAllUsers = () => {
+  return axios.request({
+    url: '/aiassistant/user/list/users',
+    method: 'post'
+  })
+}
+
+export const changeUsers = (data) => {
+  return axios.request({
+    data,
+    url: '',
     method: 'post'
   })
 }

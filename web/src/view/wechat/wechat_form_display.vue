@@ -5,7 +5,8 @@
         <th nowrap="nowrap"
             v-for="cg in configData"
             :key="cg.id">{{cg.tableColumnConfig.chineseName}}</th>
-        <th nowrap="nowrap">操作</th>
+        <th v-if="canEdit"
+            nowrap="nowrap">操作</th>
       </tr>
       <tr v-for="l in list"
           :key="l.id">
@@ -13,8 +14,13 @@
             :key="cg.id + '' + l.id">
           <span v-html="computedVal(l,cg)"></span>
         </td>
-        <td>
-          <a :href="'/#/wechat_form_edit/' + id + '/' + l.id ">编辑</a>
+        <td nowrap="nowrap">
+          <a style="margin-right:10px;"
+             v-if="canEdit && l.create_user === userid"
+             :href="'/#/wechat_form_edit/' + id + '/' + l.id ">编辑</a>
+          <a v-if="canEdit && l.create_user === userid"
+             href="javascript:;"
+             @click="changUserBegin(l)">转让</a>
         </td>
       </tr>
     </table>
@@ -24,43 +30,51 @@
                     :total-items="total"
                     :items-per-page="pageSize"
                     force-ellipses />
-    <van-dialog v-model="show">
-      <van-list :finished="finished">
-        <van-cell v-for="(k,v) in activeItem"
-                  :key="k">
-          <span class="">
-            <p>{{v}}:</p>
-            <p style="text-align:right;">{{k.displayValue || k}}</p>
-          </span>
-        </van-cell>
-
-      </van-list>
-    </van-dialog>
+    <van-popup position="bottom"
+               v-model="showSelect">
+      <van-picker :defaultIndex="defaultIndex"
+                  show-toolbar
+                  title="选择用户"
+                  @cancel="onCancel"
+                  @confirm="onConfirm"
+                  :columns="users" />
+    </van-popup>
   </div>
 </template>
 <script>
-import { getFormConfigData, getFormData } from '@/api/data'
+import { getFormConfigData, getFormData, exchangeData } from '@/api/data'
+import { getCurrentUser, getAllUsers } from '@/api/user'
+
 export default {
   data () {
     return {
+      showSelect: false,
       loading: false,
-      show: false,
       pageSize: 16,
       finished: false,
       currentPage: 1,
       activeItem: {},
       total: 0,
+      defaultIndex: 0,
       id: '',
+      users: [],
       pageNo: 1,
       list: [],
-      configData: []
+      configData: [],
+      userid: 0,
+      canEdit: false // 能否编辑
     }
   },
   created () {
     localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-表单详情'
     this.id = this.$route.params.id
-    this.onLoad(this.id)
+    getCurrentUser().then(res => {
+      this.onLoad(this.id)
+      if (res.data.code === 200) {
+        this.userid = res.data.data.id
+      }
+    })
   },
   methods: {
     computedVal (l, cg) {
@@ -103,6 +117,7 @@ export default {
         .then(res => {
           if (res.data.code === 200) {
             this.configData = res.data.data.tableDisplayConfigList
+            this.canEdit = !!res.data.data.tableConfig.canEdit
             this.loadData(1)
           } else {
           }
@@ -128,13 +143,43 @@ export default {
         this.loading = false
       })
     },
-    showInfo (item) {
-      this.activeItem = item
-      this.show = true
-    },
     pageChange (page) {
       this.currentPage = page
       this.loadData()
+    },
+    changUserBegin (l) {
+      this.showSelect = true
+      if (this.users.length === 0) {
+        getAllUsers().then(res => {
+          if (res.data.code === 200) {
+            this.users = res.data.data.reduce((res, item) => {
+              if (item.id !== this.userid) {
+                return [...res, { text: item.userName, key: item.id }]
+              } else {
+                return res
+              }
+            }, [])
+          } else {
+            this.$notify({
+              message: '请求出错',
+              duration: 1000,
+              background: '#f44'
+            })
+          }
+        })
+      }
+    },
+    onCancel () {
+      this.showSelect = false
+    },
+    onConfirm (val, v2) {
+      // let data = {
+      //   customerId: this.cdata.id,
+      //   toUserId: this.formItem.user
+      // }
+      exchangeData()
+      console.log(val, v2)
+      this.showSelect = false
     }
   }
 }

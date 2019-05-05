@@ -72,7 +72,7 @@ export default {
   },
   created () {
     localStorage.setItem('login', 'login')
-    document.title = '云问CRM助手-新增数据'
+    document.title = '云问CRM助手-新增编辑'
     this.id = this.$route.params.id
     this.tid = this.$route.params.tid
     this.onLoad(this.tid)

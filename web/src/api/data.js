@@ -86,3 +86,11 @@ export const uniquedData = (obj) => {
     method: 'post'
   })
 }
+
+export const exchangeData = (obj) => {
+  return axios.request({
+    headers: { 'Content-Type': 'application/json' },
+    url: `aiassistant/business/crm/trans?customerId=${customerId}&toUserId=${toUserId}`,
+    method: 'post'
+  })
+}

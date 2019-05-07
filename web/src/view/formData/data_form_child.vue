@@ -58,12 +58,14 @@
       <Table :columns="modalColum"
              :data="columnsDetailForModal"></Table>
     </Modal>
-    <createItem :showModal="createItemModalVisible"
+    <createItem :visible="createItemModalVisible"
                 :isEdit="isEdit"
                 :editData="columnsDetailForModal"
                 :tableColumnConfigList="nowTreeData"
                 @close="createItemModalVisible = false"
                 @getVal="getVal"></createItem>
+    <transferUserModal :cdata="rowDetail"
+                       :visible="showTransferUserModal" />
   </div>
 </template>
 <script>
@@ -75,9 +77,10 @@ import {
   modifyData
 } from '@/api/data'
 import createItem from '../components/createItem.vue'
+import transferUserModal from '../components/transferUserModal.vue'
 export default {
   name: 'data_form_child',
-  components: { createItem },
+  components: { createItem, transferUserModal },
   data () {
     return {
       active: null,
@@ -103,6 +106,10 @@ export default {
           }
         }
       ],
+      // 当前用户id
+      userId: localStorage.getItem('id') - 0,
+      // 转让数据模态框显示
+      showTransferUserModal: false,
       // 是否正在编辑表单
       isEdit: false,
       modalDetails: [],
@@ -282,7 +289,6 @@ export default {
           }
         ]
       }, [])
-      console.log(this.columnsDetail, this.rowDetail)
       return d
     }
   },
@@ -316,7 +322,8 @@ export default {
       }
       if (this.isEdit) {
         // 编辑表单
-        obj.dataId = this.columnsDetail.tableId
+        console.log(this.rowDetail)
+        obj.dataId = this.rowDetail.id
         modifyData(obj).then(res => {
           if (res.data.code === 500) {
             this.$Message.error({
@@ -327,6 +334,11 @@ export default {
           } else {
             this.createItemModalVisible = false
             this.getTabsData()
+            this.$Message.success({
+              content: res.data.message,
+              duration: 3,
+              closable: true
+            })
           }
         })
       } else {
@@ -335,7 +347,7 @@ export default {
           // 错误谈错误提示 this.$Message 和以前一样 全局提示
           // 成功关闭model  this.createItemModalVisible = false,
           //   成功后更新列表。 this.getTabsData();
-          console.log('yun', res)
+          // console.log('yun', res)
           if (res.data.code === 500) {
             this.$Message.error({
               content: res.data.message,
@@ -345,6 +357,11 @@ export default {
           } else {
             this.createItemModalVisible = false
             this.getTabsData()
+            this.$Message.success({
+              content: res.data.message,
+              duration: 3,
+              closable: true
+            })
           }
         })
       }
@@ -370,30 +387,34 @@ export default {
         }
       }
       getFormData(obj).then(res => {
-        // console.log(res.data.data, 'uuuuuuuuuuu')
-        this.detailDatas = res.data.data.list
-        this.total = res.data.data.total
-        this.detailDatas.forEach(value => {
-          let objKeys = Object.keys(value)
-          objKeys.forEach(val => {
-            if (typeof value[val] === 'object') {
-              if (val === 'file_id' && value[val].originValue) {
-                value[val] = value[val].displayValue + '-||-' + value[val].originValue
-              } else {
-                value[val] = value[val].displayValue
+        if (res.data.code === 200) {
+          // console.log(res.data.data, 'uuuuuuuuuuu')
+          this.detailDatas = res.data.data.list
+          this.total = res.data.data.total
+          this.detailDatas.forEach(value => {
+            let objKeys = Object.keys(value)
+            objKeys.forEach(val => {
+              if (typeof value[val] === 'object') {
+                if (val === 'file_id' && value[val].originValue) {
+                  value[val] = value[val].displayValue + '-||-' + value[val].originValue
+                } else {
+                  value[val] = value[val].displayValue
+                }
               }
-            }
+            })
           })
-        })
+        }
       })
     },
     getTabsData () {
       getListData().then(res => {
         // //console.log(res.data.data);
-        this.tabsDatas = res.data.data.sort((a, b) => a.id - b.id)
-        this.getTableDatas(this.tabsDatas[0].id)
-        this.tableName = this.tabsDatas[0].chineseName
-        this.active = 0
+        this.tabsDatas = res.data.data
+        if (this.tabsDatas.length > 0) {
+          this.getTableDatas(this.tabsDatas[0].id)
+          this.tableName = this.tabsDatas[0].chineseName
+          this.active = 0
+        }
       })
     },
     showIndex (data) {
@@ -478,7 +499,7 @@ export default {
         this.columnsDetail.push({
           title: '操作',
           key: 'action',
-          width: 150,
+          width: 180,
           fixed: 'right',
           align: 'center',
           render: (h, params) => {
@@ -501,8 +522,8 @@ export default {
                 },
                 '查看'
               ),
-              this.dataSetting.canEdit
-                ? h(
+              (this.dataSetting[0].canEdit && this.userId === params.row.create_user)
+                ? [h(
                   'Button',
                   {
                     props: {
@@ -518,10 +539,29 @@ export default {
                           this.isEdit = true
                         })
                       }
+                    },
+                    style: {
+                      'margin-right': '5px'
                     }
                   },
                   '编辑'
-                )
+                ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'info',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.rowDetail = params.row
+                        this.showTransferUserModal = true
+                      }
+                    }
+                  },
+                  '转让'
+                )]
                 : null
             ])
           }

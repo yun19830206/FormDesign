@@ -77,6 +77,8 @@ export default {
           .then(res => {
             if (res.data.code === 200) {
               const data = res.data
+              localStorage.setItem('id', data.data.id)
+              localStorage.setItem('userInfo', JSON.stringify(data.data))
               commit('setToken', data.token)
               resolve()
             } else {

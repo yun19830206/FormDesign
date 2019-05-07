@@ -36,9 +36,9 @@ import aSelect from './formItems/aSelect.vue'
 import { uniquedData } from '@/api/data'
 
 export default {
-  // 外部引用本组件传入对象接受区域。 外部使用 :showModal=''接收
+  // 外部引用本组件传入对象接受区域。 外部使用 :visible=''接收
   props: {
-    showModal: {
+    visible: {
       type: Boolean
     },
     tableColumnConfigList: {
@@ -89,7 +89,12 @@ export default {
     show (v) {
       if (v && this.isEdit) {
         this.editData.map(item => {
-          this.formItem[item.englishName] = item.value + ''
+          this.formItem[item.englishName] = item.value ? (item.value + '') : ''
+        })
+        // console.log(this.formItem, 'this.formItem')
+      } else if (!v) {
+        this.$nextTick(_ => {
+          this.formItem = {}
         })
       }
     }
@@ -110,8 +115,8 @@ export default {
   computed: {
     show: {
       get () {
-        // console.log('computed: get ()', this.showModal)
-        return this.showModal
+        // console.log('computed: get ()', this.visible)
+        return this.visible
       },
       set (val) {
         // console.log('computed: set (val) 被执行', val)

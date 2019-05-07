@@ -5,7 +5,8 @@
 </template>
 
 <script>
-// import { getMyFormData } from '@/api/data'
+import { getAllUsers } from '@/api/user'
+
 export default {
   name: 'home',
   components: {
@@ -15,6 +16,9 @@ export default {
     return {
 
     }
+  },
+  created () {
+    getAllUsers()
   },
   mounted () {
     // //console.log(getMyFormData)

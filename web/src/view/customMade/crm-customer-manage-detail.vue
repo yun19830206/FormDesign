@@ -1,17 +1,23 @@
 <template>
   <div>
     <div class="table-wrapper">
-      <customerDetail :customerColumns="customerColumns"
-                      :customerData="customerData"></customerDetail>
+      <customerDetail :originColumns="customerColumns"
+                      :originData="customerData"></customerDetail>
     </div>
     <div class="table-wrapper">
-      <linkManDetail :linkManColumns="linkManColumns"
-                     :linkManData="linkManData"></linkManDetail>
+      <linkManDetail :originColumns="linkManColumns"
+                     :originData="linkManData"></linkManDetail>
     </div>
     <div class="table-wrapper">
-      <itemDetail :itemColumns="itemColumns"
-                  :itemData="itemData"></itemDetail>
+      <itemDetail @sendVisitHisData="getVisitHisData"
+                  :originColumns="itemColumns"
+                  :originData="itemData"></itemDetail>
     </div>
+    <div class="table-wrapper">
+      <visitDetail :originColumns="visiteColumns"
+                   :originData="visiteData"></visitDetail>
+    </div>
+
   </div>
 </template>
 
@@ -19,10 +25,11 @@
 import customerDetail from '../components/customMade/customerDetail.vue'
 import linkManDetail from '../components/customMade/linkManDetail.vue'
 import itemDetail from '../components/customMade/itemDetail.vue'
+import visitDetail from '../components/customMade/visitDetail.vue'
 import { getCustomerData } from '@/api/data'
 export default {
   name: 'crm-customer-manage-detail',
-  components: { customerDetail, linkManDetail, itemDetail },
+  components: { customerDetail, linkManDetail, itemDetail, visitDetail },
   data () {
     return {
       customerId: '',
@@ -33,7 +40,10 @@ export default {
       linkManColumns: [],
       linkManData: [],
       itemData: [],
-      itemColumns: []
+      itemColumns: [],
+      visiteColumns: [],
+      visiteData: [],
+      visible: false
     }
   },
   computed: {},
@@ -44,6 +54,20 @@ export default {
     this.getConfig()
   },
   methods: {
+    getVisitHisData (data) {
+      let visiteData = data.map(item => {
+        return item.reduce((r, i) => {
+          let key = Object.keys(i)[0]
+          if (typeof i[key] === 'object' && i[key] !== null) {
+            r[key] = i[key].displayValue || ''
+            return r
+          } else {
+            return Object.assign(r, i)
+          }
+        }, {})
+      })
+      this.visiteData = visiteData
+    },
     /**
      * 更新页码
      */
@@ -81,6 +105,10 @@ export default {
           })
           this.itemData = itemData
 
+          if (res.data.data.projectList[0]) {
+
+          }
+
           let configData = JSON.parse(localStorage.getItem('tabConfig'))
 
           this.customerColumns = configData['crm_customer'].tableDisplayConfigList.map(i => {
@@ -98,6 +126,13 @@ export default {
           })
 
           this.itemColumns = configData['crm_project'].tableDisplayConfigList.map(i => {
+            return {
+              title: i.tableColumnConfig.chineseName,
+              key: i.tableColumnConfig.englishName
+            }
+          })
+
+          this.visiteColumns = configData['crm_project_visit'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
               key: i.tableColumnConfig.englishName

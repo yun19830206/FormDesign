@@ -2,11 +2,17 @@
   <div>
     <p class="table-title">项目</p>
     <i-table :columns="columns"
-             :data="itemData"></i-table>
+             :data="originData"></i-table>
+    <showColumnDetailModal :visible="visible"
+                           @close="visible = false"
+                           :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
   </div>
 </template>
 <script>
+import { visitData } from '@/api/data'
+import common from './detail.common.js'
 export default {
+  mixins: [common],
   data () {
     return {
 
@@ -15,16 +21,19 @@ export default {
   created () {
     console.log(this.itemData, this.columns)
   },
-  props: {
-    itemColumns: Array,
-    itemData: Array
+  watch: {
+    originData (v) {
+      if (v[0]) {
+        this.getVisiterHistory(v[0].id)
+      }
+    }
   },
   computed: {
     columns () {
-      return [...this.itemColumns, {
+      return [...this.originColumns, {
         title: '操作',
         key: 'action',
-        width: 150,
+        width: 200,
         fixed: 'right',
         align: 'center',
         render: (h, params) => {
@@ -38,7 +47,7 @@ export default {
                 },
                 on: {
                   click: () => {
-
+                    this.computedData(params.row)
                   }
                 },
                 style: {
@@ -54,6 +63,9 @@ export default {
                   type: 'info',
                   size: 'small'
                 },
+                style: {
+                  'margin-right': '5px'
+                },
                 on: {
                   click: () => {
 
@@ -61,10 +73,36 @@ export default {
                 }
               },
               '修改'
+            ),
+            h(
+              'Button',
+              {
+                props: {
+                  type: 'warning',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.getVisiterHistory(params.row.id)
+                  }
+                }
+              },
+              '拜访记录'
             )
           ])
         }
       }]
+    }
+  },
+  methods: {
+    getVisiterHistory (id) {
+      visitData(id).then(res => {
+        if (res.data.code === 200) {
+          this.$emit('sendVisitHisData', res.data.data)
+        } else {
+          this.$Message.error(res.data.message)
+        }
+      })
     }
   }
 }

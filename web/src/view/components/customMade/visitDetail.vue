@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="table-title">客户信息</p>
+    <p class="table-title">拜访记录</p>
     <i-table :columns="columns"
              :data="originData"></i-table>
     <showColumnDetailModal :visible="visible"
@@ -9,18 +9,23 @@
   </div>
 </template>
 <script>
+import { visitData } from '@/api/data'
 import common from './detail.common.js'
 export default {
   mixins: [common],
   data () {
-    return {}
+    return {
+
+    }
+  },
+  created () {
   },
   computed: {
     columns () {
       return [...this.originColumns, {
         title: '操作',
         key: 'action',
-        width: 150,
+        width: 120,
         fixed: 'right',
         align: 'center',
         render: (h, params) => {
@@ -42,25 +47,15 @@ export default {
                 }
               },
               '查看'
-            ),
-            h(
-              'Button',
-              {
-                props: {
-                  type: 'info',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-
-                  }
-                }
-              },
-              '修改'
             )
           ])
         }
       }]
+    }
+  },
+  methods: {
+    getVisiterHistory (id) {
+      visitData(id)
     }
   }
 }

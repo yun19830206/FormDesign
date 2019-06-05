@@ -2,23 +2,24 @@
   <div>
     <p class="table-title">联系人</p>
     <i-table :columns="columns"
-             :data="linkManData"></i-table>
+             :data="originData"></i-table>
+    <showColumnDetailModal :visible="visible"
+                           @close="visible = false"
+                           :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
   </div>
 </template>
 <script>
+import common from './detail.common.js'
 export default {
+  mixins: [common],
   data () {
     return {
 
     }
   },
-  props: {
-    linkManColumns: Array,
-    linkManData: Array
-  },
   computed: {
     columns () {
-      return [...this.linkManColumns, {
+      return [...this.originColumns, {
         title: '操作',
         key: 'action',
         width: 150,
@@ -35,7 +36,7 @@ export default {
                 },
                 on: {
                   click: () => {
-
+                    this.computedData(params.row)
                   }
                 },
                 style: {

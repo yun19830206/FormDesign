@@ -62,7 +62,7 @@ export default {
             localStorage.setItem('tabsDatas', JSON.stringify(tabsDatas))
             localStorage.setItem('login', 'login')
             this.$router.push({
-              name: this.$config.homeName
+              name: 'CRMCustomerManage'
             })
           })
         })

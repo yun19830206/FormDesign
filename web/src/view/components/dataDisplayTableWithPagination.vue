@@ -10,7 +10,8 @@
 
       <Input v-if="foreignKeyValues === null || typeof foreignKeyValues[item.queryColumnName] === 'undefined'"
              v-model="item.queryValue" />
-      <Select v-if="foreignKeyValues !== null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'"
+      <Select clearable
+              v-if="foreignKeyValues !== null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'"
               v-model="item.queryValue">
         <Option v-for="list in foreignKeyValues[item.queryColumnName]"
                 :key="list.displayValue"

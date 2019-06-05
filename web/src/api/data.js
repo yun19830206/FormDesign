@@ -90,7 +90,7 @@ export const uniquedData = (obj) => {
 export const exchangeData = (obj) => {
   return axios.request({
     headers: { 'Content-Type': 'application/json' },
-    url: `aiassistant/business/crm/trans?customerId=${customerId}&toUserId=${toUserId}`,
+    url: `aiassistant/business/crm/trans?customerId=${obj.customerId}&toUserId=${obj.toUserId}`,
     method: 'post'
   })
 }
@@ -107,6 +107,14 @@ export const exportCustomerData = () => {
   return axios.request({
     headers: { 'Content-Type': 'application/json' },
     url: `aiassistant/business/crm/customer/export`,
+    method: 'post'
+  })
+}
+
+export const visitData = (id) => {
+  return axios.request({
+    headers: { 'Content-Type': 'application/json' },
+    url: `/aiassistant/business/crm/customer/visits?projectId=${id}`,
     method: 'post'
   })
 }

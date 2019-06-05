@@ -24,7 +24,7 @@
                                       :columnsDetail="columnsDetail"
                                       :detailDatas="detailDatas"
                                       :total="total"
-                                      @showDetail="showDetail"
+                                      @showDetail="() => {pageNumber = 1, showDetail()}"
                                       @pageChange="currentPageChange"></dataDisplayTableWithPagination>
       </Col>
     </Row>
@@ -41,6 +41,8 @@
                 @close="createItemModalVisible = false"
                 @getVal="getVal"></createItem>
     <transferUserModal :cdata="rowDetail"
+                       @colos="showTransferUserModal = false"
+                       @success="showDetail"
                        :visible="showTransferUserModal" />
   </div>
 </template>
@@ -351,7 +353,7 @@ export default {
         dto: {
           // 业务查询条件
           tableId: this.treeId, // 表单主键ID，由菜单点击事件获得
-          queryCondition: this.queryCondition
+          queryCondition: this.queryCondition.filter(i => i.queryValue)
         }
       }
       getFormData(obj).then(res => {
@@ -402,134 +404,140 @@ export default {
       this.treeId = id
       this.showDetail()
       getTableData(id).then(res => {
-        // //console.log(res.data.data.tableConfig, 'ppppppptable')
-        this.dataSetting = [res.data.data.tableConfig]
-        // 获取所有搜索条件列表
-        this.searchDatas = res.data.data.tableQueryConfigList
-        this.queryCondition = []
-        // 获取当前表格数据筛选条件的外键下拉选项列表
-        this.foreignKeyValues = res.data.data.foreignKeyValues || {}
-        // 设置查询条件
-        // console.log(this.searchDatas, 'dddddddd')
-        this.searchDatas.forEach(value => {
-          if (value.tableColumnConfig.dropValue !== null) {
-            let arr = []
-            value.tableColumnConfig.dropValue.split(',').forEach(v => {
-              arr.push({ displayValue: v })
+        if (res.data.code === 200) {
+          // //console.log(res.data.data.tableConfig, 'ppppppptable')
+          this.dataSetting = [res.data.data.tableConfig]
+          // 获取所有搜索条件列表
+          this.searchDatas = res.data.data.tableQueryConfigList
+          this.queryCondition = []
+          // 获取当前表格数据筛选条件的外键下拉选项列表
+          this.foreignKeyValues = res.data.data.foreignKeyValues || {}
+          // 设置查询条件
+          // console.log(this.searchDatas, 'dddddddd')
+          this.searchDatas.forEach(value => {
+            if (value.tableColumnConfig.dropValue !== null) {
+              let arr = []
+              value.tableColumnConfig.dropValue.split(',').forEach(v => {
+                arr.push({ displayValue: v })
+              })
+              let key = value.tableColumnConfig.englishName
+              this.foreignKeyValues[key] = arr
+            }
+            // console.log(this.foreignKeyValues, 'yyyyyyyyyyyyyyyyyyyy')
+            this.queryCondition.push({
+              queryColumnName: value.tableColumnConfig.englishName,
+              queryColumnType: value.queryType,
+              queryValue: '',
+              chineseName: value.tableColumnConfig.chineseName,
+              colType: value.tableColumnConfig.colType
             })
-            let key = value.tableColumnConfig.englishName
-            this.foreignKeyValues[key] = arr
-          }
-          // console.log(this.foreignKeyValues, 'yyyyyyyyyyyyyyyyyyyy')
-          this.queryCondition.push({
-            queryColumnName: value.tableColumnConfig.englishName,
-            queryColumnType: value.queryType,
-            queryValue: '',
-            chineseName: value.tableColumnConfig.chineseName,
-            colType: value.tableColumnConfig.colType
           })
-        })
-        // console.log(this.queryCondition, 'uuuuuuuu')
-        this.columnsDetail = []
-        res.data.data.tableColumnConfigList.forEach((value, index) => {
-          if (value.colType === 'COLUMN_FILE') {
-            this.columnsDetail.push({
-              title: value.chineseName,
-              key: value.englishName,
-              width: 200,
-              render: (h, params) => {
-                return h(
-                  'a',
-                  {
-                    attrs: {
-                      href:
-                        this.baseUrl +
-                        'aiassistant/file/get/file?fileId=' +
-                        (params.row.file_id ? params.row.file_id.split('-||-')[1] : '')
-                    }
-                  },
-                  (params.row.file_id ? params.row.file_id.split('-||-')[0] : '')
-                )
-              }
-            })
-          } else {
-            this.columnsDetail.push({
-              title: value.chineseName,
-              key: value.englishName,
-              width: 200
-            })
-          }
-        })
-        this.columnsDetail.push({
-          title: '操作',
-          key: 'action',
-          width: 180,
-          fixed: 'right',
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.showIndex(params.row)
-                    }
-                  },
-                  style: {
-                    'margin-right': '5px'
-                  }
-                },
-                '查看'
-              ),
-              (this.dataSetting[0].canEdit && this.userId === params.row.create_user)
-                ? [h(
+          // console.log(this.queryCondition, 'uuuuuuuu')
+          this.columnsDetail = []
+          res.data.data.tableColumnConfigList.forEach((value, index) => {
+            if (value.colType === 'COLUMN_FILE') {
+              this.columnsDetail.push({
+                title: value.chineseName,
+                key: value.englishName,
+                width: 200,
+                render: (h, params) => {
+                  return h(
+                    'a',
+                    {
+                      attrs: {
+                        href:
+                          this.baseUrl +
+                          'aiassistant/file/get/file?fileId=' +
+                          (params.row.file_id ? params.row.file_id.split('-||-')[1] : '')
+                      }
+                    },
+                    (params.row.file_id ? params.row.file_id.split('-||-')[0] : '')
+                  )
+                }
+              })
+            } else {
+              this.columnsDetail.push({
+                title: value.chineseName,
+                key: value.englishName,
+                width: 200
+              })
+            }
+          })
+          this.columnsDetail.push({
+            title: '操作',
+            key: 'action',
+            width: 180,
+            fixed: 'right',
+            align: 'center',
+            render: (h, params) => {
+              return h('div', [
+                h(
                   'Button',
                   {
                     props: {
-                      type: 'success',
+                      type: 'primary',
                       size: 'small'
                     },
                     on: {
                       click: () => {
-                        getTableData(this.treeId).then(res => {
-                          this.rowDetail = params.row
-                          this.nowTreeData = res.data.data
-                          this.createItemModalVisible = true
-                          this.isEdit = true
-                        })
+                        this.showIndex(params.row)
                       }
                     },
                     style: {
                       'margin-right': '5px'
                     }
                   },
-                  '编辑'
+                  '查看'
                 ),
-                h(
-                  'Button',
-                  {
-                    props: {
-                      type: 'info',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.rowDetail = params.row
-                        this.showTransferUserModal = true
+                (this.dataSetting[0].canEdit && this.userId === params.row.create_user)
+                  ? [h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          getTableData(this.treeId).then(res => {
+                            this.rowDetail = params.row
+                            this.nowTreeData = res.data.data
+                            this.createItemModalVisible = true
+                            this.isEdit = true
+                          })
+                        }
+                      },
+                      style: {
+                        'margin-right': '5px'
                       }
-                    }
-                  },
-                  '转让'
-                )]
-                : null
-            ])
-          }
-        })
+                    },
+                    '编辑'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'info',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.rowDetail = params.row
+                          this.showTransferUserModal = true
+                        }
+                      }
+                    },
+                    '转让'
+                  )]
+                  : null
+              ])
+            }
+          })
+        } else {
+          this.columnsDetail = []
+          this.detailDatas = []
+          this.$Message.error(res.data.message)
+        }
       })
     }
 

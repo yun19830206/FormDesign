@@ -6,7 +6,7 @@
                                     :detailDatas="detailDatas"
                                     :total="total"
                                     :isDetail="true"
-                                    @showDetail="showDetail"
+                                    @showDetail="() => {pageNumber = 1, showDetail()}"
                                     @export="exportData"
                                     @addNew="addNew"
                                     @pageChange="currentPageChange"></dataDisplayTableWithPagination>
@@ -257,7 +257,7 @@ export default {
         dto: {
           // 业务查询条件
           tableId: this.treeId, // 表单主键ID，由菜单点击事件获得
-          queryCondition: this.queryCondition
+          queryCondition: this.queryCondition.filter(i => i.queryValue)
         }
       }
       getFormData(obj).then(res => {

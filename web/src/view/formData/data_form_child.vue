@@ -19,37 +19,13 @@
       <Col span="19"
            class="rightArea">
       <!--查询条件表-->
-      <p class="table-title">查询条件</p>
-      <Row>
-        <Col span="6"
-             v-for="(item, index) in queryCondition"
-             :key="index"
-             style="padding: 0 10px;">
-        <span>{{item.chineseName}}</span>
-
-        <Input v-if="foreignKeyValues ===null || typeof foreignKeyValues[item.queryColumnName] === 'undefined'"
-               v-model="item.queryValue" />
-        <Select v-if="foreignKeyValues !==null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'"
-                v-model="item.queryValue">
-          <Option v-for="list in foreignKeyValues[item.queryColumnName]"
-                  :key="list.displayValue"
-                  :label="list.displayValue"
-                  :value="list.displayValue"></Option>
-        </Select>
-        </Col>
-        <Button type="primary"
-                style="position: absolute; right: 10px; top: 20px;"
-                @click="showDetail">查询</Button>
-      </Row>
-      <!--<i-table :columns="searchColumns" :data="searchDatas"></i-table>-->
-      <p class="table-title">表单数据展示</p>
-      <i-table :columns="columnsDetail"
-               :data="detailDatas"></i-table>
-      <Page :total="total"
-            prev-text="上一页"
-            next-text="下一页"
-            @on-change="current"
-            class="page-style" />
+      <dataDisplayTableWithPagination :queryCondition="queryCondition"
+                                      :foreignKeyValues="foreignKeyValues"
+                                      :columnsDetail="columnsDetail"
+                                      :detailDatas="detailDatas"
+                                      :total="total"
+                                      @showDetail="showDetail"
+                                      @pageChange="currentPageChange"></dataDisplayTableWithPagination>
       </Col>
     </Row>
     <Modal v-model="rowModal"
@@ -78,9 +54,10 @@ import {
 } from '@/api/data'
 import createItem from '../components/createItem.vue'
 import transferUserModal from '../components/transferUserModal.vue'
+import dataDisplayTableWithPagination from '../components/dataDisplayTableWithPagination.vue'
 export default {
   name: 'data_form_child',
-  components: { createItem, transferUserModal },
+  components: { createItem, transferUserModal, dataDisplayTableWithPagination },
   data () {
     return {
       active: null,
@@ -112,7 +89,6 @@ export default {
       showTransferUserModal: false,
       // 是否正在编辑表单
       isEdit: false,
-      modalDetails: [],
       // 当前新增的表名
       tableName: '',
       // 数据总数
@@ -125,7 +101,6 @@ export default {
       // 查询条件
       selectValue2: '',
       rowModal: false,
-      data1: [],
       // 当前选中的列表id
       treeId: '',
       typesObject: {
@@ -292,14 +267,13 @@ export default {
       return d
     }
   },
-  mounted () {
+  created () {
     this.getTabsData()
   },
   methods: {
     //  下载
     downFile (id) { },
-    current (val) {
-      // //console.log(val)
+    currentPageChange (val) {
       this.pageNumber = val
       this.showDetail()
     },
@@ -371,12 +345,6 @@ export default {
     },
     // 分页
     showDetail () {
-      // console.log(this.selectValue1, this.selectValue2, 'kkkkkkkkkk')
-      let sendObj = { englishName: '', chineseName: '' }
-      if (this.selectValue1 !== '') {
-        sendObj.englishName = JSON.parse(this.selectValue1).englishName
-        sendObj.chineseName = JSON.parse(this.selectValue1).chineseName
-      }
       let obj = {
         pageNum: this.pageNumber, // 请求页码
         pageSize: 10, // 每页数量
@@ -408,7 +376,6 @@ export default {
     },
     getTabsData () {
       getListData().then(res => {
-        // //console.log(res.data.data);
         this.tabsDatas = res.data.data
         if (this.tabsDatas.length > 0) {
           this.getTableDatas(this.tabsDatas[0].id)
@@ -428,22 +395,20 @@ export default {
         this.createItemModalVisible = true
       })
     },
+
     getTableDatas (id, index) {
+      this.pageNumber = 1
       this.active = index
       this.treeId = id
-      this.showDetail(this.pageNumber)
+      this.showDetail()
       getTableData(id).then(res => {
         // //console.log(res.data.data.tableConfig, 'ppppppptable')
-        this.data1 = res.data.data.tableColumnConfigList
         this.dataSetting = [res.data.data.tableConfig]
         // 获取所有搜索条件列表
         this.searchDatas = res.data.data.tableQueryConfigList
         this.queryCondition = []
         // 获取当前表格数据筛选条件的外键下拉选项列表
-        this.foreignKeyValues = res.data.data.foreignKeyValues
-        if (this.foreignKeyValues === null) {
-          this.foreignKeyValues = {}
-        }
+        this.foreignKeyValues = res.data.data.foreignKeyValues || {}
         // 设置查询条件
         // console.log(this.searchDatas, 'dddddddd')
         this.searchDatas.forEach(value => {
@@ -495,7 +460,6 @@ export default {
             })
           }
         })
-        this.modalDetails = [...this.columnsDetail]
         this.columnsDetail.push({
           title: '操作',
           key: 'action',
@@ -568,6 +532,7 @@ export default {
         })
       })
     }
+
   },
   filters: {
     isObj: function (value) {

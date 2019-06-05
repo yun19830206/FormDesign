@@ -125,15 +125,25 @@ let routerArr = [
     component: Main,
     children: [
       {
-        path: 'customization1',
-        name: 'customization1',
+        path: 'CRMCustomerManage',
+        name: 'CRMCustomerManage',
         meta: {
-          icon: 'ios-cog',
-          title: '定制功能1'
+          icon: 'md-contacts',
+          title: 'CRM客户管理'
         },
-        // component: () => import('@/view/update/update-table.vue')
         component (resolve) {
-          require(['@/view/update/update-table.vue'], resolve)
+          require(['@/view/customMade/crm-customer-manage.vue'], resolve)
+        }
+      },
+      {
+        path: 'CRMCustomerManageDetail/:customerId/:formId',
+        name: 'CRMCustomerManageDetail',
+        meta: {
+          hideInMenu: true,
+          title: 'CRM客户管理详情'
+        },
+        component (resolve) {
+          require(['@/view/customMade/crm-customer-manage-detail.vue'], resolve)
         }
       },
       {

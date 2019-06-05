@@ -94,3 +94,19 @@ export const exchangeData = (obj) => {
     method: 'post'
   })
 }
+
+export const getCustomerData = (id) => {
+  return axios.request({
+    headers: { 'Content-Type': 'application/json' },
+    url: `aiassistant/business/crm/get/customer?customerId=${id}`,
+    method: 'post'
+  })
+}
+
+export const exportCustomerData = () => {
+  return axios.request({
+    headers: { 'Content-Type': 'application/json' },
+    url: `aiassistant/business/crm/customer/export`,
+    method: 'post'
+  })
+}

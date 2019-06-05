@@ -1,5 +1,5 @@
 <style lang="less">
-@import "./login.less";
+@import './login.less';
 </style>
 
 <template>
@@ -9,7 +9,8 @@
             title="欢迎登录"
             :bordered="false">
         <div class="form-con">
-          <login-form @on-success-valid="handleSubmit"></login-form>
+          <login-form :loading="loading"
+                      @on-success-valid="handleSubmit"></login-form>
           <p class="login-tip">请输入中文名字作为用户名和密码即可</p>
         </div>
       </Card>
@@ -20,10 +21,15 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
+import {
+  getListData,
+  getTableData
+} from '@/api/data'
 export default {
   data () {
     return {
-      loginAlert: false
+      loginAlert: false,
+      loading: false
     }
   },
   components: {
@@ -34,15 +40,32 @@ export default {
       'handleLogin'
     ]),
     handleSubmit ({ userName, password }) {
+      this.loading = true
       this.handleLogin({ userName, password }).then(res => {
-        // //console.log('yun2', res)
-        // this.$store.commit('getUserInfo', res)
-        // //console.log('yun3', res)
-        localStorage.setItem('login', 'login')
-        this.$router.push({
-          name: this.$config.homeName
+        getListData().then(res => {
+          let tabsDatas = res.data.data
+          let tabConfig = {}
+          let promiseArr = tabsDatas.map(i => {
+            return new Promise((resolve, reject) => {
+              getTableData(i.id).then(d => {
+                if (d.data.code === 200) {
+                  tabConfig[i.englishName] = d.data.data
+                  resolve()
+                } else {
+                  reject(new Error())
+                }
+              })
+            })
+          })
+          Promise.all(promiseArr).then(_ => {
+            localStorage.setItem('tabConfig', JSON.stringify(tabConfig))
+            localStorage.setItem('tabsDatas', JSON.stringify(tabsDatas))
+            localStorage.setItem('login', 'login')
+            this.$router.push({
+              name: this.$config.homeName
+            })
+          })
         })
-        // })
       })
     }
   }

@@ -29,6 +29,7 @@ export const getCurrentUser = () => {
 export const getAllUsers = () => {
   return axios.request({
     url: '/aiassistant/user/list/users',
+    // url: 'aiassistant/business/crm/user/list',
     method: 'post'
   })
 }

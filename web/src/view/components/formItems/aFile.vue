@@ -4,7 +4,7 @@
     <Upload ref="upload"
             :on-success="success"
             :default-file-list="fileList"
-            :action="baseUrl + '/aiassistant/file/add/file'">
+            :action="baseUrl + 'aiassistant/file/add/file'">
       <Button icon="ios-cloud-upload-outline">附件上传</Button>
     </Upload>
   </FormItem>
@@ -25,6 +25,7 @@ export default {
     }
   },
   created () {
+    console.log(this.baseUrl)
     console.log(this.info, this.formItem, '123')
     if (this.formItem[this.info.englishName]) {
       let file = this.formItem[this.info.englishName].split('-||-')

@@ -22,6 +22,9 @@ export default {
       }
     }
   },
+  created () {
+    console.log(this.columnsDetailForModal)
+  },
   data () {
     return {
       modalColum: [

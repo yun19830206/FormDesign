@@ -1,21 +1,33 @@
 <template>
-  <div>
-    <div class="table-wrapper">
-      <customerDetail :originColumns="customerColumns"
-                      :originData="customerData"></customerDetail>
-    </div>
-    <div class="table-wrapper">
-      <linkManDetail :originColumns="linkManColumns"
-                     :originData="linkManData"></linkManDetail>
-    </div>
-    <div class="table-wrapper">
-      <itemDetail @sendVisitHisData="getVisitHisData"
-                  :originColumns="itemColumns"
-                  :originData="itemData"></itemDetail>
-    </div>
-    <div class="table-wrapper">
-      <visitDetail :originColumns="visiteColumns"
-                   :originData="visiteData"></visitDetail>
+  <div class="wrapper">
+    <Spin v-if="loading"
+          fix></Spin>
+    <div v-else>
+      <div class="table-wrapper">
+        <customerDetail :originColumns="customerColumns"
+                        :tableConfig="configData['crm_customer']"
+                        @refresh="getConfig"
+                        :originData="customerData"></customerDetail>
+      </div>
+      <div class="table-wrapper">
+        <linkManDetail :originColumns="linkManColumns"
+                       @refresh="getConfig"
+                       :tableConfig="configData['crm_project_user']"
+                       :originData="linkManData"></linkManDetail>
+      </div>
+      <div class="table-wrapper">
+        <itemDetail @sendVisitHisData="getVisitHisData"
+                    :originColumns="itemColumns"
+                    @refresh="getConfig"
+                    :tableConfig="configData['crm_project']"
+                    :originData="itemData"></itemDetail>
+      </div>
+      <div class="table-wrapper">
+        <visitDetail :originColumns="visiteColumns"
+                     :tableConfig="configData['crm_project_visit']"
+                     @refresh="getConfig"
+                     :originData="visiteData"></visitDetail>
+      </div>
     </div>
 
   </div>
@@ -26,14 +38,16 @@ import customerDetail from '../components/customMade/customerDetail.vue'
 import linkManDetail from '../components/customMade/linkManDetail.vue'
 import itemDetail from '../components/customMade/itemDetail.vue'
 import visitDetail from '../components/customMade/visitDetail.vue'
-import { getCustomerData } from '@/api/data'
+import { getCustomerData, getListData, getTableData } from '@/api/data'
 export default {
   name: 'crm-customer-manage-detail',
   components: { customerDetail, linkManDetail, itemDetail, visitDetail },
   data () {
     return {
       customerId: '',
+      configData: {},
       formId: '',
+      loading: true,
       customerColumns: [],
       customerData: [],
       displayConfig: [],
@@ -50,16 +64,40 @@ export default {
   created () {
     this.customerId = this.$route.params.customerId
     this.formId = this.$route.params.formId
-    this.loading = true
-    this.getConfig()
+    this.getTableConfig()
   },
   methods: {
+    getTableConfig () {
+      getListData().then(res => {
+        let tabsDatas = res.data.data
+        let promiseArr = tabsDatas.map(i => {
+          return new Promise((resolve, reject) => {
+            getTableData(i.id).then(d => {
+              if (d.data.code === 200) {
+                this.configData[i.englishName] = d.data.data
+                resolve()
+              } else {
+                reject(new Error())
+              }
+            })
+          })
+        })
+        Promise.all(promiseArr).then(_ => {
+          this.getConfig()
+        })
+      })
+    },
     getVisitHisData (data) {
       let visiteData = data.map(item => {
         return item.reduce((r, i) => {
           let key = Object.keys(i)[0]
           if (typeof i[key] === 'object' && i[key] !== null) {
-            r[key] = i[key].displayValue || ''
+            // debugger
+            if (key === 'file_id') {
+              r[key] = i[key].displayValue + '-||-' + i[key].originValue
+            } else {
+              r[key] = i[key].displayValue || ''
+            }
             return r
           } else {
             return Object.assign(r, i)
@@ -69,9 +107,10 @@ export default {
       this.visiteData = visiteData
     },
     /**
-     * 更新页码
+     * 获取详情
      */
     getConfig () {
+      this.loading = true
       getCustomerData(this.customerId).then(res => {
         if (res.data.code === 200) {
           let customerData = res.data.data.customer.reduce((res, i) => {
@@ -109,30 +148,28 @@ export default {
 
           }
 
-          let configData = JSON.parse(localStorage.getItem('tabConfig'))
-
-          this.customerColumns = configData['crm_customer'].tableDisplayConfigList.map(i => {
+          this.customerColumns = this.configData['crm_customer'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
               key: i.tableColumnConfig.englishName
             }
           })
 
-          this.linkManColumns = configData['crm_project_user'].tableDisplayConfigList.map(i => {
+          this.linkManColumns = this.configData['crm_project_user'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
               key: i.tableColumnConfig.englishName
             }
           })
 
-          this.itemColumns = configData['crm_project'].tableDisplayConfigList.map(i => {
+          this.itemColumns = this.configData['crm_project'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
               key: i.tableColumnConfig.englishName
             }
           })
 
-          this.visiteColumns = configData['crm_project_visit'].tableDisplayConfigList.map(i => {
+          this.visiteColumns = this.configData['crm_project_visit'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
               key: i.tableColumnConfig.englishName
@@ -149,6 +186,11 @@ export default {
 </script>
 
 <style scoped>
+.wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
 .table-title {
   font-size: 15px;
   margin-bottom: 10px;

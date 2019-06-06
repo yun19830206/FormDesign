@@ -279,18 +279,8 @@ export default {
       this.pageNumber = val
       this.showDetail()
     },
-    getVal (data) {
+    getVal (list) {
       // //console.log(data)
-      let keys = Object.keys(data)
-      let list = []
-      keys.forEach(value => {
-        if (!['create_user_name', 'create_time', 'update_time'].includes(value)) {
-          list.push({
-            columnName: value,
-            columnValue: data[value]
-          })
-        }
-      })
       let obj = {
         tableId: this.treeId, // [必填]表单主键ID，由当面所在表单查询页面维护
         tableName: this.nowTreeData.tableConfig.englishName, // [必填]表单配置的表名称

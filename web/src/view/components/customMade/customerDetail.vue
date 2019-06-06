@@ -6,6 +6,12 @@
     <showColumnDetailModal :visible="visible"
                            @close="visible = false"
                            :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
+    <createItem :visible="createItemModalVisible"
+                :isEdit="true"
+                :editData="editDetailForrModal"
+                :tableColumnConfigList="tableConfig"
+                @close="createItemModalVisible = false"
+                @getVal="getVal"></createItem>
   </div>
 </template>
 <script>
@@ -34,7 +40,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.computedData(params.row)
+                    this.checkDetail(params)
                   }
                 },
                 style: {
@@ -52,7 +58,7 @@ export default {
                 },
                 on: {
                   click: () => {
-
+                    this.editData(params)
                   }
                 }
               },

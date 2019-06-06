@@ -6,6 +6,12 @@
     <showColumnDetailModal :visible="visible"
                            @close="visible = false"
                            :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
+    <createItem :visible="createItemModalVisible"
+                :isEdit="true"
+                :editData="editDetailForrModal"
+                :tableColumnConfigList="tableConfig"
+                @close="createItemModalVisible = false"
+                @getVal="getVal"></createItem>
   </div>
 </template>
 <script>
@@ -20,13 +26,12 @@ export default {
   },
   created () {
     console.log(this.itemData, this.columns)
+    if (this.originData[0]) {
+      this.getVisiterHistory(this.originData[0].id)
+    }
   },
   watch: {
-    originData (v) {
-      if (v[0]) {
-        this.getVisiterHistory(v[0].id)
-      }
-    }
+
   },
   computed: {
     columns () {
@@ -47,7 +52,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.computedData(params.row)
+                    this.checkDetail(params)
                   }
                 },
                 style: {
@@ -68,7 +73,7 @@ export default {
                 },
                 on: {
                   click: () => {
-
+                    this.editData(params)
                   }
                 }
               },

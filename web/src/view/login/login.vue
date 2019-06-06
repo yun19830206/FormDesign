@@ -42,29 +42,9 @@ export default {
     handleSubmit ({ userName, password }) {
       this.loading = true
       this.handleLogin({ userName, password }).then(res => {
-        getListData().then(res => {
-          let tabsDatas = res.data.data
-          let tabConfig = {}
-          let promiseArr = tabsDatas.map(i => {
-            return new Promise((resolve, reject) => {
-              getTableData(i.id).then(d => {
-                if (d.data.code === 200) {
-                  tabConfig[i.englishName] = d.data.data
-                  resolve()
-                } else {
-                  reject(new Error())
-                }
-              })
-            })
-          })
-          Promise.all(promiseArr).then(_ => {
-            localStorage.setItem('tabConfig', JSON.stringify(tabConfig))
-            localStorage.setItem('tabsDatas', JSON.stringify(tabsDatas))
-            localStorage.setItem('login', 'login')
-            this.$router.push({
-              name: 'CRMCustomerManage'
-            })
-          })
+        localStorage.setItem('login', 'login')
+        this.$router.push({
+          name: 'CRMCustomerManage'
         })
       })
     }

@@ -22,7 +22,7 @@ export default {
   },
   computed: {
     columns () {
-      return [...this.originColumns, {
+      return [...this.activeColumn, {
         title: '操作',
         key: 'action',
         width: 120,
@@ -39,7 +39,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.computedData(params.row)
+                    this.checkDetail(params)
                   }
                 },
                 style: {
@@ -51,6 +51,29 @@ export default {
           ])
         }
       }]
+    },
+    activeColumn () {
+      return this.originColumns.map(i => {
+        if (i.key === 'file_id') {
+          return {
+            title: i.title,
+            key: i.key,
+            render: (h, params) => {
+              return h('a', {
+                attrs: {
+                  href:
+                    this.baseUrl +
+                    'aiassistant/file/get/file?fileId=' +
+                    (params.row.file_id ? params.row.file_id.split('-||-')[1] : '')
+                }
+              },
+                (params.row.file_id ? params.row.file_id.split('-||-')[0] : ''))
+            }
+          }
+        } else {
+          return i
+        }
+      })
     }
   },
   methods: {

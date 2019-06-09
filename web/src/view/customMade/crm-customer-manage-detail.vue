@@ -1,17 +1,20 @@
 <template>
-  <div class="wrapper">
+  <div :style="isWechat ? 'margin-top: 10px;overflow: auto;' : ''"
+       class="wrapper">
     <Spin v-if="loading"
           fix></Spin>
     <div v-else>
       <div class="table-wrapper">
         <customerDetail :originColumns="customerColumns"
                         :tableConfig="configData['crm_customer']"
+                        :isWechat="isWechat"
                         @refresh="getConfig"
                         :originData="customerData"></customerDetail>
       </div>
       <div class="table-wrapper">
         <linkManDetail :originColumns="linkManColumns"
                        @refresh="getConfig"
+                       :isWechat="isWechat"
                        :tableConfig="configData['crm_project_user']"
                        :originData="linkManData"></linkManDetail>
       </div>
@@ -19,12 +22,14 @@
         <itemDetail @sendVisitHisData="getVisitHisData"
                     :originColumns="itemColumns"
                     @refresh="getConfig"
+                    :isWechat="isWechat"
                     :tableConfig="configData['crm_project']"
                     :originData="itemData"></itemDetail>
       </div>
       <div class="table-wrapper">
         <visitDetail :originColumns="visiteColumns"
                      :tableConfig="configData['crm_project_visit']"
+                     :isWechat="isWechat"
                      @refresh="getConfig"
                      :originData="visiteData"></visitDetail>
       </div>
@@ -44,6 +49,7 @@ export default {
   components: { customerDetail, linkManDetail, itemDetail, visitDetail },
   data () {
     return {
+      isWechat: false,
       customerId: '',
       configData: {},
       formId: '',
@@ -62,6 +68,7 @@ export default {
   },
   computed: {},
   created () {
+    this.isWechat = this.$route.fullPath.includes('wechat')
     this.customerId = this.$route.params.customerId
     this.formId = this.$route.params.formId
     this.getTableConfig()
@@ -151,28 +158,32 @@ export default {
           this.customerColumns = this.configData['crm_customer'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
-              key: i.tableColumnConfig.englishName
+              key: i.tableColumnConfig.englishName,
+              width: 150
             }
           })
 
           this.linkManColumns = this.configData['crm_project_user'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
-              key: i.tableColumnConfig.englishName
+              key: i.tableColumnConfig.englishName,
+              width: 150
             }
           })
 
           this.itemColumns = this.configData['crm_project'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
-              key: i.tableColumnConfig.englishName
+              key: i.tableColumnConfig.englishName,
+              width: 150
             }
           })
 
           this.visiteColumns = this.configData['crm_project_visit'].tableDisplayConfigList.map(i => {
             return {
               title: i.tableColumnConfig.chineseName,
-              key: i.tableColumnConfig.englishName
+              key: i.tableColumnConfig.englishName,
+              width: 150
             }
           })
         } else {

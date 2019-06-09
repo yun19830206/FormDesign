@@ -1,5 +1,7 @@
 <template>
   <div class="add-wrapper">
+    <Spin v-if="pageLoading"
+          fix></Spin>
     <van-cell-group>
       <div ref="item"
            v-for="item in tableColumnConfigList"
@@ -41,6 +43,7 @@ export default {
       id: '',
       tid: '',
       loading: false,
+      pageLoading: true,
       tableColumnConfigList: [],
       editVal: null,
       tableConfig: {},
@@ -81,14 +84,19 @@ export default {
     onLoad (id) {
       getFormConfigData(id)
         .then(res => {
+          this.pageLoading = false
           if (res.data.code === 200) {
             this.tableColumnConfigList = (res.data.data.tableColumnConfigList || []).filter(i => !['create_user_name', 'create_time', 'update_time'].includes(i.englishName))
             this.foreignKeyValues = res.data.data.foreignKeyValues
             this.tableName = res.data.data.tableConfig.englishName
             this.tableConfig = res.data.data.tableConfig
           } else {
+            this.$notify({
+              message: res.data.message,
+              duration: 1000,
+              background: '#f44'
+            })
           }
-          // getSingleData() {
           let data = {
             tableId: this.tid, // [必填]表单主键ID，由当面所在表单查询页面维护
             dataIdList: [this.id]
@@ -96,9 +104,9 @@ export default {
           showDetail(data).then(res => {
             this.editVal = res.data.data[0] || {}
           })
-          // }
+        }).catch(_ => {
+          this.loading = this.pageLoading = false
         })
-        .catch(_ => (this.loading = false))
     },
 
     async submitInfo (pg) {

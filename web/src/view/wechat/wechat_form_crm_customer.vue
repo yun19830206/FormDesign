@@ -49,8 +49,8 @@ export default {
   },
   created () {
     localStorage.setItem('login', 'login')
-    document.title = '云问CRM助手-表单详情'
-    this.id = this.$route.params.id
+    document.title = '云问CRM助手-CRM客户管理'
+    this.id = 1
     getCurrentUser().then(res => {
       this.onLoad(this.id)
       if (res.data.code === 200) {
@@ -122,7 +122,7 @@ export default {
                             'margin': '0 auto 5px auto'
                           }
                         },
-                        '编辑'
+                        '管理'
                       ),
                       h(
                         'Button',
@@ -155,9 +155,10 @@ export default {
     },
     /**
      * 跳转编辑页面
+     *
      */
     editDete (params) {
-      this.$router.push(`/wechat_form_edit/${this.id}/${params.row.id}`)
+      this.$router.push(`wechat_form_crm_customer_detail/${params.row.id}`)
     },
     loadData () {
       let data = {

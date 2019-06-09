@@ -291,7 +291,7 @@ export default {
         console.log(this.rowDetail)
         obj.dataId = this.rowDetail.id
         modifyData(obj).then(res => {
-          if (res.data.code === 500) {
+          if (res.data.code !== 200) {
             this.$Message.error({
               content: res.data.message,
               duration: 3,
@@ -314,7 +314,7 @@ export default {
           // 成功关闭model  this.createItemModalVisible = false,
           //   成功后更新列表。 this.getTabsData();
           // console.log('yun', res)
-          if (res.data.code === 500) {
+          if (res.data.code !== 200) {
             this.$Message.error({
               content: res.data.message,
               duration: 3,

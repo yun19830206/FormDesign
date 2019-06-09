@@ -1,11 +1,23 @@
 <template>
   <div>
-    <p class="table-title">拜访记录</p>
+    <p class="table-title">
+      <span>拜访记录</span>
+      <Button size="small"
+              type="primary"
+              @click="addData">新增</Button>
+    </p>
     <i-table :columns="columns"
-             :data="originData"></i-table>
+             :data="originData"
+             width="100%"></i-table>
     <showColumnDetailModal :visible="visible"
                            @close="visible = false"
                            :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
+    <createItem :visible="createItemModalVisible"
+                :isEdit="isEdit"
+                :editData="editDetailForrModal"
+                :tableColumnConfigList="tableConfig"
+                @close="createItemModalVisible = false"
+                @getVal="getVal"></createItem>
   </div>
 </template>
 <script>
@@ -25,7 +37,7 @@ export default {
       return [...this.activeColumn, {
         title: '操作',
         key: 'action',
-        width: 120,
+        width: this.isWechat ? 80 : 120,
         fixed: 'right',
         align: 'center',
         render: (h, params) => {
@@ -58,6 +70,7 @@ export default {
           return {
             title: i.title,
             key: i.key,
+            width: 150,
             render: (h, params) => {
               return h('a', {
                 attrs: {
@@ -83,3 +96,13 @@ export default {
   }
 }
 </script>
+<style scoped>
+.table-title {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin: 0 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+</style>

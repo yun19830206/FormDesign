@@ -248,7 +248,30 @@ let routerArr = [
     component (resolve) {
       require(['@/view/wechat/wechat_form_edit.vue'], resolve)
     }
+  },
+  {
+    path: '/wechat_form_crm_customer',
+    name: 'wechat_form_crm_customer',
+    meta: {
+      hideInMenu: true
+    },
+    // component: () => import('@/view/wechat/wechat_form_add.vue')
+    component (resolve) {
+      require(['@/view/wechat/wechat_form_crm_customer.vue'], resolve)
+    }
+  },
+  {
+    path: '/wechat_form_crm_customer_detail/:customerId',
+    name: 'wechat_form_crm_customer_detail',
+    meta: {
+      hideInMenu: true
+    },
+    // component: () => import('@/view/wechat/wechat_form_add.vue')
+    component (resolve) {
+      require(['@/view/customMade/crm-customer-manage-detail.vue'], resolve)
+    }
   }
+
 ]
 
 export default routerArr

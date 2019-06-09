@@ -82,16 +82,15 @@ export default {
       this.loading = true
       this.$refs.form.validate(valid => {
         if (valid) {
-          // console.log(this.rowDetail)
           let data = {
             customerId: this.cdata.id,
             toUserId: this.formItem.user
           }
-
           exchangeData(data).then(res => {
             if (res.data.code === 200) {
               this.loading = false
-              this.show = false
+              this.showDetail = false
+              this.$emit('success')
             }
           })
         } else {

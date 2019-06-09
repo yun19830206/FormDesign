@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       list: [],
-      loading: false,
+      loading: true,
       finished: false
     }
   },

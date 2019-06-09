@@ -206,7 +206,19 @@ export default {
       this.loading = true
       this.$refs.formInline.validate(valid => {
         if (valid) {
-          this.$emit('getVal', this.formItem)
+          let keys = Object.keys(this.formItem)
+          let forbidenList = ['create_user_name', 'create_time', 'update_time']
+          let list = keys.reduce((res, i) => {
+            if (!forbidenList.includes(i)) {
+              return [...res, {
+                columnName: i,
+                columnValue: this.formItem[i]
+              }]
+            } else {
+              return res
+            }
+          }, [])
+          this.$emit('getVal', list)
           this.loading = false
         } else {
           this.loading = false

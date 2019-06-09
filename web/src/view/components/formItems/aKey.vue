@@ -27,6 +27,7 @@ export default {
     }
   },
   created () {
+    console.log(this.formItem)
     if (this.formItem[this.info.englishName]) {
       let activeVal = this.selectVal.find(item => item.displayValue === this.formItem[this.info.englishName])
       this.formItem[this.info.englishName] = activeVal ? (activeVal.id + '') : undefined

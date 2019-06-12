@@ -29,6 +29,7 @@
       </Col>
     </Row>
     <Modal v-model="rowModal"
+           :mask-closable="false"
            title="详细信息"
            @on-ok="sureClose">
       <Table :columns="modalColum"
@@ -41,7 +42,7 @@
                 @close="createItemModalVisible = false"
                 @getVal="getVal"></createItem>
     <transferUserModal :cdata="rowDetail"
-                       @colos="showTransferUserModal = false"
+                       @close="showTransferUserModal = false"
                        @success="showDetail"
                        :visible="showTransferUserModal" />
   </div>

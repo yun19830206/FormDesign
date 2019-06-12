@@ -87,6 +87,7 @@ export default {
                 duration: 5,
                 closable: true
               })
+              reject(new Error())
             }
           })
           .catch(err => {

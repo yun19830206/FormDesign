@@ -1,5 +1,6 @@
 <template>
   <Modal v-model="show"
+         :mask-closable="false"
          :title="isEdit ? '编辑数据' : '新增数据'"
          :loading="loading"
          @on-ok="ok"
@@ -11,7 +12,8 @@
           :label-width="80">
       <div ref="item"
            :form_validate="ruleInline"
-           default
+           :defaultData="defaultData"
+           :isEdit="isEdit"
            v-for="item in needSubmitItems"
            :foreignKeyValues="tableColumnConfigList.foreignKeyValues"
            :key="item.id + '-' + item.tableId"
@@ -49,6 +51,9 @@ export default {
     },
     editData: {
       type: Array
+    },
+    defaultData: {
+      type: Object
     }
   },
   // 引用外部组件注册。只需要调用组件的方法即可，组件内部是独立的。组件引用多以此方式进行
@@ -209,7 +214,7 @@ export default {
           let keys = Object.keys(this.formItem)
           let forbidenList = ['create_user_name', 'create_time', 'update_time']
           let list = keys.reduce((res, i) => {
-            if (!forbidenList.includes(i)) {
+            if (!forbidenList.includes(i) && this.formItem[i] !== undefined && this.formItem[i] !== '') {
               return [...res, {
                 columnName: i,
                 columnValue: this.formItem[i]

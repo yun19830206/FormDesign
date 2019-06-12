@@ -21,10 +21,6 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
-import {
-  getListData,
-  getTableData
-} from '@/api/data'
 export default {
   data () {
     return {
@@ -42,11 +38,12 @@ export default {
     handleSubmit ({ userName, password }) {
       this.loading = true
       this.handleLogin({ userName, password }).then(res => {
+        this.loading = false
         localStorage.setItem('login', 'login')
         this.$router.push({
           name: 'CRMCustomerManage'
         })
-      })
+      }).catch(_ => (this.loading = false))
     }
   }
 }

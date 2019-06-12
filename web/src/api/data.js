@@ -103,11 +103,13 @@ export const getCustomerData = (id) => {
   })
 }
 
-export const exportCustomerData = () => {
+export const exportCustomerData = data => {
   return axios.request({
     headers: { 'Content-Type': 'application/json' },
     url: `aiassistant/business/crm/customer/export`,
-    method: 'post'
+    method: 'post',
+    data,
+    responseType: 'blob'
   })
 }
 

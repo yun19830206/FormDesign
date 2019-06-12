@@ -9,8 +9,10 @@
       <span>{{item.chineseName}}</span>
 
       <Input v-if="foreignKeyValues === null || typeof foreignKeyValues[item.queryColumnName] === 'undefined'"
-             v-model="item.queryValue" />
+             v-model="item.queryValue"
+             @on-enter="$emit('showDetail')" />
       <Select clearable
+              @on-change="$emit('showDetail')"
               v-if="foreignKeyValues !== null && typeof foreignKeyValues[item.queryColumnName] !== 'undefined'"
               v-model="item.queryValue">
         <Option v-for="list in foreignKeyValues[item.queryColumnName]"
@@ -39,7 +41,7 @@
     <Page :total="total"
           prev-text="上一页"
           next-text="下一页"
-          @on-change="$emit('pageChange')"
+          @on-change="(v)=>{$emit('pageChange',v)}"
           class="page-style" />
   </div>
 </template>
@@ -69,23 +71,12 @@ export default {
   },
 
   computed: {
-    show: {
-      get () {
-        return this.visible
-      },
-      set (val) {
-        this.$emit('close', val)
-      }
-    }
+
   },
 
   // methods代表本页面公共方法区
   methods: {
 
-    /** 数据提交 */
-    showDetail () {
-      this.$emit('close')
-    }
   }
 }
 </script>
@@ -102,8 +93,5 @@ export default {
   padding: 10px;
   text-align: right;
   background: #fff;
-}
-.ivu-table-wrapper {
-  height: calc(100% - 220px);
 }
 </style>

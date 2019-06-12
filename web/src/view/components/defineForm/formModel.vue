@@ -1,6 +1,7 @@
 <template>
   <Modal width="1200px"
          v-model="show"
+         :mask-closable="false"
          title="详情"
          @on-cancel="cancel">
     <Row>

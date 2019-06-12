@@ -2,6 +2,7 @@
   <Modal v-model="show"
          title="转让数据"
          :loading="loading"
+         :mask-closable="false"
          @on-ok="ok"
          @on-cancel="cancel">
     <Form v-if="show"
@@ -89,7 +90,7 @@ export default {
           exchangeData(data).then(res => {
             if (res.data.code === 200) {
               this.loading = false
-              this.showDetail = false
+              this.show = false
               this.$emit('success')
             }
           })

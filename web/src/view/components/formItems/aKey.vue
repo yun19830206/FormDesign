@@ -1,7 +1,8 @@
 <template>
   <FormItem :prop="info.englishName"
             :label="info.chineseName">
-    <Select v-model="formItem[info.englishName]">
+    <Select :disabled="disabled"
+            v-model="formItem[info.englishName]">
       <Option v-for="i in selectVal"
               :key="i.id"
               :value="i.id + ''">{{i.displayValue}}</Option>
@@ -19,18 +20,36 @@ export default {
     },
     formItem: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean
+    },
+    defaultData: {
+      type: Object
     }
   },
   computed: {
     selectVal () {
-      return this.foreignKeyValues[this.info.englishName]
+      if (this.defaultData && Array.isArray(this.defaultData[this.info.englishName])) {
+        return this.foreignKeyValues[this.info.englishName].filter(i => this.defaultData[this.info.englishName].includes(i.id))
+      } else {
+        return this.foreignKeyValues[this.info.englishName]
+      }
+    },
+    disabled () {
+      return !!(!this.isEdit && this.defaultData && this.defaultData[this.info.englishName] && !Array.isArray(this.defaultData[this.info.englishName]))
     }
   },
   created () {
     console.log(this.formItem)
+    // debugger
     if (this.formItem[this.info.englishName]) {
       let activeVal = this.selectVal.find(item => item.displayValue === this.formItem[this.info.englishName])
       this.formItem[this.info.englishName] = activeVal ? (activeVal.id + '') : undefined
+    } else if (this.defaultData && this.defaultData[this.info.englishName]) {
+      if (!Array.isArray(this.defaultData[this.info.englishName])) {
+        this.formItem[this.info.englishName] = this.foreignKeyValues[this.info.englishName].find(i => i.id === this.defaultData[this.info.englishName]).id + ''
+      }
     }
   },
   methods: {}

@@ -11,6 +11,8 @@
                                     @addNew="addNew"
                                     @pageChange="currentPageChange"></dataDisplayTableWithPagination>
     <transferUserModal :cdata="rowDetail"
+                       @close="showTransferUserModal = false"
+                       @success="() => {pageNumber = 1, showDetail()}"
                        :visible="showTransferUserModal" />
     <createItem :visible="createItemModalVisible"
                 :isEdit="isEdit"
@@ -97,10 +99,31 @@ export default {
       })
     },
     /**
+     * 下载
+     */
+    download (data) {
+      if (!data) {
+        return
+      }
+      let url = window.URL.createObjectURL(new Blob([data.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'CRM客户.xls')
+      document.body.appendChild(link)
+      link.click()
+    },
+    /**
      * 导出数据
      */
     exportData () {
-      exportCustomerData()
+      let obj = {
+        tableId: this.treeId, // 表单主键ID，由菜单点击事件获得
+        queryCondition: this.queryCondition.filter(i => i.queryValue)
+      }
+      exportCustomerData(obj).then(res => {
+        this.download(res)
+      })
     },
     /**
      * 更新页码

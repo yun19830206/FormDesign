@@ -14,6 +14,7 @@
                            :columnsDetailForModal="columnsDetailForModal"></showColumnDetailModal>
     <createItem :visible="createItemModalVisible"
                 :isEdit="isEdit"
+                :defaultData="defaultData"
                 :editData="editDetailForrModal"
                 :tableColumnConfigList="tableConfig"
                 @close="createItemModalVisible = false"
@@ -24,10 +25,17 @@
 import common from './detail.common.js'
 export default {
   mixins: [common],
+  props: {
+    customerData: Object
+  },
   data () {
     return {
-
+      defaultData: {
+        compange_name: this.customerData.id
+      }
     }
+  },
+  created () {
   },
   watch: {
     originData (v) {

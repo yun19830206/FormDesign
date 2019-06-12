@@ -71,7 +71,8 @@ let routerArr = [
         name: 'my_define_form',
         meta: {
           icon: 'md-list-box',
-          title: '我定义表单'
+          title: '我定义表单',
+          keepAlive: true
         },
         // component: () => import('@/view/defineForm/my_define_form.vue')
         component (resolve) {
@@ -83,7 +84,8 @@ let routerArr = [
         name: 'new_define_form',
         meta: {
           icon: 'md-clipboard',
-          title: '新定义表单'
+          title: '新定义表单',
+          keepAlive: true
         },
         // component: () => import('@//view/defineForm/new_define_form.vue')
         component (resolve) {

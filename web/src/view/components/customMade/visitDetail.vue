@@ -15,6 +15,7 @@
     <createItem :visible="createItemModalVisible"
                 :isEdit="isEdit"
                 :editData="editDetailForrModal"
+                :defaultData="defaultData"
                 :tableColumnConfigList="tableConfig"
                 @close="createItemModalVisible = false"
                 @getVal="getVal"></createItem>
@@ -25,9 +26,14 @@ import { visitData } from '@/api/data'
 import common from './detail.common.js'
 export default {
   mixins: [common],
+  props: {
+    itemData: Array
+  },
   data () {
     return {
-
+      defaultData: {
+        project_name: this.itemData.map(i => i.id)
+      }
     }
   },
   created () {
@@ -81,6 +87,16 @@ export default {
                 }
               },
                 (params.row.file_id ? params.row.file_id.split('-||-')[0] : ''))
+            }
+          }
+        } else if (i.key === 'visit_text') {
+          return {
+            title: i.title,
+            key: i.key,
+            width: 200,
+            render: (h, params) => {
+              return h('span',
+                (params.row.visit_text.length > 20 ? (params.row.visit_text.substring(0, 20) + '...') : params.row.visit_text))
             }
           }
         } else {

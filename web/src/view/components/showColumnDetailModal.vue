@@ -1,6 +1,7 @@
 <template>
   <Modal v-model="show"
          title="详细信息"
+         :mask-closable="false"
          @on-ok="sureClose">
     <Table :columns="modalColum"
            :data="columnsDetailForModal"></Table>

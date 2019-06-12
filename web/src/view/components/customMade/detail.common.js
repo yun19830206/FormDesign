@@ -116,6 +116,7 @@ export default {
       }
     },
     editData (params) {
+      this.isEdit = true
       this.index = params.index
       this.computedData(params.row)
       this.createItemModalVisible = true

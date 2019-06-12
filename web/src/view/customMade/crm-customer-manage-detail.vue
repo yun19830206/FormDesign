@@ -8,12 +8,13 @@
         <customerDetail :originColumns="customerColumns"
                         :tableConfig="configData['crm_customer']"
                         :isWechat="isWechat"
-                        @refresh="getConfig"
+                        @refresh="getTableConfig"
                         :originData="customerData"></customerDetail>
       </div>
       <div class="table-wrapper">
         <linkManDetail :originColumns="linkManColumns"
-                       @refresh="getConfig"
+                       @refresh="getTableConfig"
+                       :customerData="customerData[0]"
                        :isWechat="isWechat"
                        :tableConfig="configData['crm_project_user']"
                        :originData="linkManData"></linkManDetail>
@@ -21,7 +22,8 @@
       <div class="table-wrapper">
         <itemDetail @sendVisitHisData="getVisitHisData"
                     :originColumns="itemColumns"
-                    @refresh="getConfig"
+                    :customerData="customerData[0]"
+                    @refresh="getTableConfig"
                     :isWechat="isWechat"
                     :tableConfig="configData['crm_project']"
                     :originData="itemData"></itemDetail>
@@ -30,7 +32,8 @@
         <visitDetail :originColumns="visiteColumns"
                      :tableConfig="configData['crm_project_visit']"
                      :isWechat="isWechat"
-                     @refresh="getConfig"
+                     :itemData="itemData"
+                     @refresh="getTableConfig"
                      :originData="visiteData"></visitDetail>
       </div>
     </div>
@@ -75,20 +78,25 @@ export default {
   },
   methods: {
     getTableConfig () {
+      this.loading = true
       getListData().then(res => {
         let tabsDatas = res.data.data
-        let promiseArr = tabsDatas.map(i => {
-          return new Promise((resolve, reject) => {
-            getTableData(i.id).then(d => {
-              if (d.data.code === 200) {
-                this.configData[i.englishName] = d.data.data
-                resolve()
-              } else {
-                reject(new Error())
-              }
-            })
-          })
-        })
+        let promiseArr = tabsDatas.reduce((res, i) => {
+          if (i.id >= 5) {
+            return res
+          } else {
+            return [...res, new Promise((resolve, reject) => {
+              getTableData(i.id).then(d => {
+                if (d.data.code === 200) {
+                  this.configData[i.englishName] = d.data.data
+                  resolve()
+                } else {
+                  reject(new Error())
+                }
+              })
+            })]
+          }
+        }, [])
         Promise.all(promiseArr).then(_ => {
           this.getConfig()
         })

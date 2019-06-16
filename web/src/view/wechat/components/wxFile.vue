@@ -42,8 +42,8 @@ export default {
   },
   watch: {
     editVal (v) {
-      this.formItem.input = v[this.info.englishName].displayValue || ''
-      this.fileId = v[this.info.englishName].originValue
+      this.formItem.input = v[this.info.englishName] ? v[this.info.englishName].displayValue : ''
+      this.fileId = v[this.info.englishName] ? v[this.info.englishName].originValue : ''
       // console.log(v)
     }
   },

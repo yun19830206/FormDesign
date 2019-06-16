@@ -36,6 +36,9 @@ export default {
     },
     foreignKeyValues: {
       type: Object
+    },
+    defaultData: {
+      type: Object
     }
   },
   data () {
@@ -55,9 +58,23 @@ export default {
     }
   },
   created () {
-    this.columns = (this.foreignKeyValues[this.info.englishName] || []).map(
-      item => item.displayValue
-    )
+    if (this.defaultData && this.info.englishName in this.defaultData) {
+      if (Array.isArray(this.defaultData[this.info.englishName])) {
+        this.columns = (this.foreignKeyValues[this.info.englishName] || []).filter(
+          item => this.defaultData[this.info.englishName].includes(item.id)
+        ).map(i => i.displayValue)
+      } else {
+        this.columns = [(this.foreignKeyValues[this.info.englishName] || []).find(
+          item => item.id === this.defaultData[this.info.englishName]
+        ).displayValue]
+        this.formItem.input = this.columns[0]
+        this.disabled = true
+      }
+    } else {
+      this.columns = (this.foreignKeyValues[this.info.englishName] || []).map(
+        item => item.displayValue
+      )
+    }
   },
   computed: {
     defaultIndex () {

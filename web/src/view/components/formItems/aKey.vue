@@ -37,7 +37,7 @@ export default {
       }
     },
     disabled () {
-      return !!(!this.isEdit && this.defaultData && this.defaultData[this.info.englishName] && !Array.isArray(this.defaultData[this.info.englishName]))
+      return !!(!Array.isArray(this.defaultData[this.info.englishName]) && this.defaultData && this.defaultData[this.info.englishName] && !Array.isArray(this.defaultData[this.info.englishName]))
     }
   },
   created () {

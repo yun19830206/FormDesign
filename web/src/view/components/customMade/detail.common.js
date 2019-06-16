@@ -35,7 +35,11 @@ export default {
   methods: {
     addData () {
       if (this.isWechat) {
-        this.$router.push(`/wechat_form_add/${this.tableConfig.tableConfig.id}`)
+        if (this.defaultData) {
+          this.$router.push(`/wechat_form_add/${this.tableConfig.tableConfig.id}/${encodeURIComponent(JSON.stringify(this.defaultData))}`)
+        } else {
+          this.$router.push(`/wechat_form_add/${this.tableConfig.tableConfig.id}`)
+        }
       } else {
         this.isEdit = false
         this.createItemModalVisible = true
@@ -58,7 +62,11 @@ export default {
     },
     checkDetail (params) {
       if (this.isWechat) {
-        this.$router.push(`/wechat_form_edit/${this.tableConfig.tableConfig.id}/${params.row.id}`)
+        if (this.defaultData) {
+          this.$router.push(`/wechat_form_edit/${this.tableConfig.tableConfig.id}/${params.row.id}/${encodeURIComponent(JSON.stringify(this.defaultData))}`)
+        } else {
+          this.$router.push(`/wechat_form_edit/${this.tableConfig.tableConfig.id}/${params.row.id}`)
+        }
       } else {
         this.index = params.index
         this.computedData(params.row)

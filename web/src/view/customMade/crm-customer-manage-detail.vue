@@ -29,10 +29,14 @@
                     :originData="itemData"></itemDetail>
       </div>
       <div class="table-wrapper">
+        <p>
+          <a id="visit"></a>
+        </p>
         <visitDetail :originColumns="visiteColumns"
                      :tableConfig="configData['crm_project_visit']"
                      :isWechat="isWechat"
                      :itemData="itemData"
+                     :linkManData="linkManData"
                      @refresh="getTableConfig"
                      :originData="visiteData"></visitDetail>
       </div>

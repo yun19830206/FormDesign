@@ -6,6 +6,7 @@
            :key="item.id + '-' + item.tableId"
            :is="componentName[item.colType]"
            :info="item"
+           :defaultData="defaultData"
            :tableConfig="tableConfig"
            :foreignKeyValues="foreignKeyValues"></div>
     </van-cell-group>
@@ -38,6 +39,7 @@ export default {
     return {
       id: '',
       loading: false,
+      defaultData: null,
       tableColumnConfigList: [],
       tableConfig: {},
       componentName: {
@@ -70,6 +72,7 @@ export default {
     localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-新增数据'
     this.id = this.$route.params.id
+    this.defaultData = this.$route.params.defaultData ? JSON.parse(decodeURIComponent(this.$route.params.defaultData)) : null
     this.onLoad(this.id)
   },
   methods: {
@@ -132,7 +135,7 @@ export default {
               background: '#07c160'
             })
             setTimeout(() => {
-              this.$router.push('/wechat_form/')
+              window.history.back()
             }, 600)
           } else {
             this.$notify({

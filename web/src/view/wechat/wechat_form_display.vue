@@ -2,7 +2,8 @@
   <div style="overflow: auto;height: 100%; ">
     <Spin v-if="loading"
           fix></Spin>
-    <i-table :columns="columns"
+    <i-table style="margin-bottom:50px;"
+             :columns="columns"
              width="100%"
              :data="list"></i-table>
     <van-pagination class="pages"
@@ -85,6 +86,12 @@ export default {
                     )
                   }
                 }
+              } else if (i.tableColumnConfig.englishName === 'visit_text') {
+                return {
+                  title: i.tableColumnConfig.chineseName,
+                  key: i.tableColumnConfig.englishName,
+                  width: 300
+                }
               } else {
                 return {
                   title: i.tableColumnConfig.chineseName,
@@ -123,26 +130,26 @@ export default {
                           }
                         },
                         '编辑'
-                      ),
-                      h(
-                        'Button',
-                        {
-                          props: {
-                            type: 'info',
-                            size: 'small'
-                          },
-                          on: {
-                            click: () => {
-                              this.changUserBegin(params.row)
-                            }
-                          },
-                          style: {
-                            'display': 'block',
-                            'margin': 'auto'
-                          }
-                        },
-                        '转让'
                       )
+                      // h(
+                      //   'Button',
+                      //   {
+                      //     props: {
+                      //       type: 'info',
+                      //       size: 'small'
+                      //     },
+                      //     on: {
+                      //       click: () => {
+                      //         this.changUserBegin(params.row)
+                      //       }
+                      //     },
+                      //     style: {
+                      //       'display': 'block',
+                      //       'margin': 'auto'
+                      //     }
+                      //   },
+                      //   '转让'
+                      // )
                     ])
                   }
                 }
@@ -170,11 +177,12 @@ export default {
       }
       getFormData(data).then(res => {
         if (res.data.code === 200) {
+          console.log()
           this.list = res.data.data.list.map(i => {
             let keys = Object.keys(i)
             keys.map(j => {
               if (i[j].displayValue) {
-                if (i === 'file_id') {
+                if (j === 'file_id') {
                   i[j] = i[j].displayValue + '-||-' + i[j].originValue
                 } else {
                   i[j] = i[j].displayValue

@@ -230,7 +230,7 @@ let routerArr = [
     }
   },
   {
-    path: '/wechat_form_add/:id',
+    path: '/wechat_form_add/:id/:defaultData?',
     name: 'wechat_form_add',
     meta: {
       hideInMenu: true
@@ -241,7 +241,7 @@ let routerArr = [
     }
   },
   {
-    path: '/wechat_form_edit/:tid/:id',
+    path: '/wechat_form_edit/:tid/:id/:defaultData?',
     name: 'wechat_form_edit',
     meta: {
       hideInMenu: true

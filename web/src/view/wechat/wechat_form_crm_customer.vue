@@ -39,6 +39,7 @@ export default {
       defaultIndex: 0,
       id: '',
       users: [],
+      name: '',
       pageNo: 1,
       list: [],
       columns: [],
@@ -51,6 +52,8 @@ export default {
     localStorage.setItem('login', 'login')
     document.title = '云问CRM助手-CRM客户管理'
     this.id = 1
+    console.log(this.$route)
+    this.name = this.$route.query.name || ''
     getCurrentUser().then(res => {
       this.onLoad(this.id)
       if (res.data.code === 200) {
@@ -123,26 +126,26 @@ export default {
                           }
                         },
                         '管理'
-                      ),
-                      h(
-                        'Button',
-                        {
-                          props: {
-                            type: 'info',
-                            size: 'small'
-                          },
-                          on: {
-                            click: () => {
-                              this.changUserBegin(params.row)
-                            }
-                          },
-                          style: {
-                            'display': 'block',
-                            'margin': 'auto'
-                          }
-                        },
-                        '转让'
                       )
+                      // h(
+                      //   'Button',
+                      //   {
+                      //     props: {
+                      //       type: 'info',
+                      //       size: 'small'
+                      //     },
+                      //     on: {
+                      //       click: () => {
+                      //         this.changUserBegin(params.row)
+                      //       }
+                      //     },
+                      //     style: {
+                      //       'display': 'block',
+                      //       'margin': 'auto'
+                      //     }
+                      //   },
+                      //   '转让'
+                      // )
                     ])
                   }
                 }
@@ -166,6 +169,13 @@ export default {
         pageSize: this.pageSize, // 每页数量
         dto: {
           // 业务查询条件
+          queryCondition: this.name ? [{
+            chineseName: '公司法定全称',
+            colType: 'COLUMN_SIGN_LINE_TEXT',
+            queryColumnName: 'compange_name',
+            queryColumnType: 'CONDITION_ENUM_LIKE',
+            queryValue: this.name
+          }] : undefined,
           tableId: this.id
         }
       }

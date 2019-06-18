@@ -8,6 +8,7 @@
            :key="item.id + '-' + item.tableId"
            :is="componentName[item.colType]"
            :info="item"
+           :defaultData="defaultData"
            :editVal="editVal"
            :isEdit="true"
            :tableConfig="tableConfig"
@@ -46,6 +47,7 @@ export default {
       pageLoading: true,
       tableColumnConfigList: [],
       editVal: null,
+      defaultData: null,
       tableConfig: {},
       componentName: {
         COLUMN_SIGN_LINE_TEXT: 'wx-input',
@@ -78,6 +80,7 @@ export default {
     document.title = '云问CRM助手-新增编辑'
     this.id = this.$route.params.id
     this.tid = this.$route.params.tid
+    this.defaultData = this.$route.params.defaultData ? JSON.parse(decodeURIComponent(this.$route.params.defaultData)) : null
     this.onLoad(this.tid)
   },
   methods: {
@@ -155,7 +158,7 @@ export default {
               background: '#07c160'
             })
             setTimeout(() => {
-              this.$router.push('/wechat_form/')
+              window.history.back()
             }, 600)
           } else {
             this.$notify({

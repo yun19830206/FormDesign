@@ -27,12 +27,14 @@ import common from './detail.common.js'
 export default {
   mixins: [common],
   props: {
-    itemData: Array
+    itemData: Array,
+    linkManData: Array
   },
   data () {
     return {
       defaultData: {
-        project_name: this.itemData.map(i => i.id)
+        project_name: this.itemData.map(i => i.id),
+        connect_persion: this.linkManData.map(i => i.id)
       }
     }
   },

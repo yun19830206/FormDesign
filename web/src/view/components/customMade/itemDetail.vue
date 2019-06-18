@@ -100,7 +100,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.getVisiterHistory(params.row.id)
+                    this.getVisiterHistory(params.row.id, true)
                   }
                 }
               },
@@ -122,7 +122,7 @@ export default {
                       }
                     },
                     style: {
-                      'margin-bottom': '5px'
+                      'margin': '5px 0'
                     }
                   },
                   '查看/修改'
@@ -138,8 +138,11 @@ export default {
                     },
                     on: {
                       click: () => {
-                        this.getVisiterHistory(params)
+                        this.getVisiterHistory(params.row.id, true)
                       }
+                    },
+                    style: {
+                      'margin-bottom': '5px'
                     }
                   },
                   '拜访记录'
@@ -152,10 +155,13 @@ export default {
     }
   },
   methods: {
-    getVisiterHistory (id) {
+    getVisiterHistory (id, isScroll) {
       visitData(id).then(res => {
         if (res.data.code === 200) {
           this.$emit('sendVisitHisData', res.data.data)
+          this.$nextTick(_ => isScroll && document.getElementById('visit').scrollIntoView(
+            { behavior: 'smooth' }
+          ))
         } else {
           this.$Message.error(res.data.message)
         }
